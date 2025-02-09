@@ -8,7 +8,7 @@ export default function Avtorization() {
     const [user, setUser] = useState({login:'', password: ''});
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
+    console.log('rfgf')
     const avtorization = () => {
       console.log('user', user)
       axios.get('http://localhost:8080/api/avtorization', {params: user})
@@ -19,6 +19,7 @@ export default function Avtorization() {
         }
       })
     }
+  
     
   return (
     <div>
