@@ -97,9 +97,8 @@
                 type="text" 
                 id="username" 
                 placeholder="Логин" 
-                pattern="[a-zA-Zа-яА-Я0-9!@#$%^&*()_+=\-[\]{};':\\|,.<>\/?]+" 
-                required
-            >
+                
+                required>
                 <div class="error-message" id="usernameError">Недопустимые символы</div>
             </div>
 
@@ -151,15 +150,13 @@
 
         // Сбор данных формы
         const userData = {
-            firstName: document.getElementById('firstName').value,
-            lastName: document.getElementById('lastName').value,
             userName: document.getElementById('username').value,
             email: document.getElementById('email').value,
             password: document.getElementById('password').value
         };
 
         try {
-            const response = await fetch('/api/register', {
+            const response = await fetch('https://serverbook-1-dhna.onrender.com/api/registration', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
