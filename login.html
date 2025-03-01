@@ -5,10 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BookSwap - Вход</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Dancing+Script:wght@700&display=swap"
-        rel="stylesheet">
-        <link rel="stylesheet" href="login.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="login.css">
 </head>
 
 <body>
@@ -24,23 +22,55 @@
             <button type="submit" class="auth-btn">Войти</button>
         </form>
         <div class="auth-links">
-            <a href="register.html">Нет аккаунта? Зарегистрироваться</a>
+            <a href="register.html">Нет аккаунта? Зарегистрироваться</a><br>
+            <a href="#" id="forgotPasswordLink">Забыли пароль?</a>
         </div>
     </div>
 
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', function (event) {
-            event.preventDefault(); // Отменяем стандартное поведение формы
+    <!-- Модальное окно восстановления пароля -->
+    <div id="passwordModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.2);">
+        <h2 style="margin-bottom: 15px; color: #2c3e50;">Восстановление пароля</h2>
+        <form id="recoveryForm">
+            <div class="input-group">
+                <input type="email" id="recoveryEmail" placeholder="Ваш email" required style="width: 100%; margin-bottom: 15px;">
+            </div>
+            <button type="submit" class="auth-btn" style="width: 100%;">Отправить ссылку</button>
+        </form>
+    </div>
 
-            // Получаем значения полей формы
+    <script>
+        // Функционал восстановления пароля
+        document.getElementById('forgotPasswordLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('passwordModal').style.display = 'block';
+        });
+
+        document.getElementById('recoveryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('recoveryEmail').value;
+
+            fetch('https://serverbook-1-dhna.onrender.com/forgot-password', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email: email})
+            })
+            .then(response => {
+                if(response.ok) {
+                    alert('Ссылка для сброса отправлена на ваш email');
+                    document.getElementById('passwordModal').style.display = 'none';
+                } else {
+                    alert('Ошибка отправки запроса');
+                }
+            })
+            .catch(error => console.error('Ошибка:', error));
+        });
+
+        // Исходный скрипт входа (без изменений)
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
             const name = document.getElementById('userName').value;
             const password = document.getElementById('password').value;
 
-            // Выводим полученные данные в консоль
-            console.log('Имя:', name);
-            console.log('Пароль:', password);
-
-            // Здесь вы можете отправить данные на сервер с помощью fetch или XMLHttpRequest
             const params = new URLSearchParams({
                 userName: name,
                 password: password
@@ -48,25 +78,19 @@
 
             fetch(`https://serverbook-1-dhna.onrender.com/api/login?${params.toString()}`)
                 .then(response => {
-                if (!response.ok) {
-                    alert("говно")
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-                    .then(data => {
-                        console.log(data);
-                    })
-                    .then(data => {
-                        window.location.assign("main1-1.html");;
-                    })
-                    .catch(error => {
-                        console.error('There has been a problem with your fetch operation:', error);
-                    });
-
+                    if (!response.ok) {
+                        alert("Ошибка входа");
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    window.location.assign("main1-1.html");
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                });
         });
-
     </script>
 </body>
-
 </html>
