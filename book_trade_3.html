@@ -205,6 +205,8 @@
     <script>
         let currentStep = 1;
         let formData = {};
+        // Предполагается, что userId будет получен из сессии или авторизации
+        const userId = 'USER_ID_FROM_AUTH'; // Замените на реальный ID пользователя
 
         // Сохранение данных текущего шага
         function preserveInputValues(step) {
@@ -273,6 +275,7 @@
             document.getElementById(`step${step}`).classList.add('active');
             currentStep = step;
             restoreInputValues(step);
+            updateFormSections();
         }
 
         // Обновление состояния секций формы
@@ -330,8 +333,8 @@
         // Автоформатирование ISBN
         document.querySelectorAll('input[name="isbn"]').forEach(input => {
             input.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/-/g, ''); // Удаляем существующие дефисы
-                if (value.length > 13) value = value.slice(0, 13); // Ограничиваем 13 символами
+                let value = e.target.value.replace(/-/g, '');
+                if (value.length > 13) value = value.slice(0, 13);
                 let formatted = '';
                 if (value.length > 0) formatted += value.slice(0, 3);
                 if (value.length >= 4) formatted += '-' + value.slice(3, 4);
@@ -360,17 +363,195 @@
         yearInput.max = new Date().getFullYear();
         yearInput.value = yearInput.max;
 
-        // Отправка формы
-        function submitForm() {
+        // Отправка формы в MongoDB
+        async function submitForm() {
+            preserveInputValues(3); // Сохраняем данные шага 3
+
+            // Проверка валидности обязательных полей шага 3
             const step3Inputs = document.querySelectorAll('#step3 input[required]');
             let valid = true;
             step3Inputs.forEach(input => {
                 if (!input.checkValidity()) valid = false;
             });
-            if (valid) {
-                alert('Форма успешно отправлена!');
-            } else {
+            if (!valid) {
                 step3Inputs.forEach(input => input.reportValidity());
+                return;
+            }
+
+            if (!userId || userId === 'USER_ID_FROM_AUTH') {
+                alert('Пользователь не авторизован! Пожалуйста, войдите в систему.');
+                return;
+            }
+
+            try {
+                // 1. Создание автора (Author)
+                const authorData = {
+                    lastName: formData['step1_author_surname'],
+                    firstName: formData['step1_author_name'] || ''
+                };
+                const authorResponse = await fetch('/api/authors', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(authorData)
+                });
+                const author = await authorResponse.json();
+                if (!author._id) throw new Error('Ошибка создания автора');
+
+                // 2. Создание книги (BookLibrary)
+                const bookLibraryData = {
+                    idAuthor: author._id,
+                    bookName: formData['step1_book_title'],
+                    note: '' // Поле отсутствует в форме, оставляем пустым
+                };
+                const bookLibraryResponse = await fetch('/api/bookLibraries', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bookLibraryData)
+                });
+                const bookLibrary = await bookLibraryResponse.json();
+                if (!bookLibrary._id) throw new Error('Ошибка создания книги');
+
+                // 3. Создание предложения (OfferList)
+                const offerListData = {
+                    idBookLibrary: bookLibrary._id,
+                    idUser: userId,
+                    IBSN: formData['step1_isbn'] || '',
+                    yearPublishing: formData['step1_year'] ? new Date(formData['step1_year'], 0, 1) : undefined,
+                    idStatus: 'DEFAULT_STATUS_ID' // Замените на реальный ID статуса
+                };
+                const offerListResponse = await fetch('/api/offerLists', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(offerListData)
+                });
+                const offerList = await offerListResponse.json();
+                if (!offerList._id) throw new Error('Ошибка создания предложения');
+
+                // 4. Создание списка желаний (WishList)
+                const wishListData = {
+                    idUser: userId,
+                    idStatus: 'DEFAULT_STATUS_ID' // Замените на реальный ID статуса
+                    // idUserAddress добавим позже после создания адреса
+                };
+                const wishListResponse = await fetch('/api/wishLists', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(wishListData)
+                });
+                const wishList = await wishListResponse.json();
+                if (!wishList._id) throw new Error('Ошибка создания списка желаний');
+
+                // 5. Создание категорий для WishList (жанры и состояние)
+                const genres = Array.from(document.querySelectorAll('#step2 input[name="genre_step2"]:checked'))
+                    .map(input => input.parentElement.textContent.trim());
+                for (const genre of genres) {
+                    const categoryData = {
+                        name: genre,
+                        multiSelect: true
+                    };
+                    const categoryResponse = await fetch('/api/categories', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(categoryData)
+                    });
+                    const category = await categoryResponse.json();
+                    if (category._id) {
+                        const userValueCategoryData = {
+                            idUserList: wishList._id,
+                            idCategory: category._id
+                        };
+                        await fetch('/api/userValueCategories', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(userValueCategoryData)
+                        });
+                    }
+                }
+
+                const condition = document.querySelector('#step2 input[name="condition_step2"]:checked');
+                if (condition) {
+                    const conditionData = {
+                        name: condition.parentElement.textContent.trim(),
+                        multiSelect: false
+                    };
+                    const conditionResponse = await fetch('/api/categories', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(conditionData)
+                    });
+                    const conditionCategory = await conditionResponse.json();
+                    if (conditionCategory._id) {
+                        const userValueCategoryData = {
+                            idUserList: wishList._id,
+                            idCategory: conditionCategory._id
+                        };
+                        await fetch('/api/userValueCategories', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(userValueCategoryData)
+                        });
+                    }
+                }
+
+                // 6. Создание адреса доставки (UserAddress)
+                const addressData = {
+                    idUser: userId,
+                    addCountry: '', // Поле отсутствует в форме
+                    addrIndex: formData['step3_delivery_postcode'],
+                    addrCity: formData['step3_delivery_city'],
+                    addrStreet: formData['step3_delivery_street'],
+                    addrStructure: formData['step3_delivery_house'],
+                    addrApart: formData['step3_delivery_apartment'] || ''
+                };
+                const addressResponse = await fetch('/api/userAddresses', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(addressData)
+                });
+                const address = await addressResponse.json();
+                if (!address._id) throw new Error('Ошибка создания адреса');
+
+                // Обновление WishList с idUserAddress
+                wishListData.idUserAddress = address._id;
+                await fetch(`/api/wishLists/${wishList._id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(wishListData)
+                });
+
+                // 7. Создание записи обмена (ExchangeList)
+                const exchangeListData = {
+                    idOfferList1: offerList._id,
+                    idWishList1: wishList._id,
+                    idOfferList2: null, // Будет заполнено позже
+                    idWishList2: null,  // Будет заполнено позже
+                    isBoth: false
+                };
+                const exchangeListResponse = await fetch('/api/exchangeLists', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(exchangeListData)
+                });
+                const exchangeList = await exchangeListResponse.json();
+                if (!exchangeList._id) throw new Error('Ошибка создания записи обмена');
+
+                // 8. Создание записи пользователя в обмене (UserExchangeList)
+                const userExchangeListData = {
+                    idExchangeList: exchangeList._id,
+                    idOfferList: offerList._id,
+                    trackNumber: '', // Заполняется позже
+                    receiving: false
+                };
+                await fetch('/api/userExchangeLists', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userExchangeListData)
+                });
+
+                alert('Данные успешно отправлены!');
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при отправке данных: ' + error.message);
             }
         }
     </script>
