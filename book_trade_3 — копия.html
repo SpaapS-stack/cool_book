@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookSwap - Начать обмен</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="trade.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <img src="logo.png" class="logo" alt="BookSwap Logo" onerror="this.src='placeholder-logo.png'">
+            <h1>BookSwap</h1>
+        </div>
+        <form class="auth-form">
+            <div class="auth-fields">
+                <input type="text" placeholder="Логин" name="login" id="loginInput">
+                <input type="password" placeholder="Пароль" name="password" id="passwordInput">
+                <button type="button" onclick="login()">Войти</button> <!-- Изменено: убрана ссылка, добавлен onclick -->
+            </div>
+            <div class="register-link">
+                <a href="register.html">Нет аккаунта? Зарегистрируйтесь!</a>
+            </div>
+        </form>
+    </header>
+
+    <nav class="nav">
+        <ul class="nav-list">
+            <li><a href="main1-1.html">Главная</a></li>
+            <li><a href="book_trade_3.html">Начать обмен</a></li>
+            <li><a href="#">Мои обмены</a></li>
+            <li><a href="#">Задать вопрос</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <!-- Содержимое main остаётся без изменений -->
+        <div class="content-wrapper">
+            <div class="exchange-form">
+                <h1 class="form-header">Бланк обмена</h1>
+                <div class="form-sections">
+                    <div class="form-section active">Хочу обменять</div>
+                    <div class="form-section inactive">Хочу получить</div>
+                    <div class="form-section inactive">Адрес доставки</div>
+                </div>
+
+                <!-- Шаг 1: Хочу обменять -->
+                <div class="form-step active" id="step1">
+                    <form id="step1Form">
+                        <div class="form-grid">
+                            <div class="form-column">
+                                <h2>Хочу обменять</h2>
+                                <div class="form-group">
+                                    <label class="required">Фамилия автора</label>
+                                    <input type="text" name="author_surname" data-hint="Только кириллица/латиница, до 50 символов" onfocus="showHint(this)" onblur="hideHint()" required>
+                                    <div class="hint">Пример: Толстой</div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Имя автора</label>
+                                    <input type="text" name="author_name" data-hint="Только кириллица/латиница, до 20 символов" onfocus="showHint(this)" onblur="hideHint()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="required">Название книги</label>
+                                    <input type="text" name="book_title" data-hint="Только кириллица/латиница, цифры, кавычки, тире, знаки препинания; до 50 символов" onfocus="showHint(this)" onblur="hideHint()" pattern="[A-Za-zА-Яа-яёЁ0-9«»\"'\-.,!? ]{1,50}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>ISBN</label>
+                                    <input type="text" name="isbn" pattern="\d{3}-\d-\d{3}-\d{5}-\d" placeholder="978-5-699-12014-7">
+                                </div>
+                                <div class="form-group">
+                                    <label class="required">Год издания</label>
+                                    <input type="number" name="year" data-hint="Индексируются издания не позднее 2025 года" onfocus="showHint(this)" onblur="hideHint()" min="1800" max="2025" pattern="\d{4}" required>
+                                </div>
+                            </div>
+                            <div class="form-column">
+                                <h2>Категории для "Хочу обменять"</h2>
+                                <div class="clear-selection" onclick="clearSelections('step1')">снять выделения</div>
+                                <ul class="category-list">
+                                    <li class="category-item parent">
+                                        Жанр
+                                        <ul>
+                                            <li class="category-item"><label><input type="checkbox" name="genre_step1"> Детективы</label></li>
+                                            <li class="category-item"><label><input type="checkbox" name="genre_step1"> Фантастика</label></li>
+                                            <li class="category-item"><label><input type="checkbox" name="genre_step1"> Фэнтези</label></li>
+                                            <li class="category-item"><label><input type="checkbox" name="genre_step1"> Романтика</label></li>
+                                            <li class="category-item"><label><input type="checkbox" name="genre_step1"> Историческая литература</label></li>
+                                        </ul>
+                                    </li>
+                                    <li class="category-item parent">
+                                        Состояние
+                                        <ul>
+                                            <li class="category-item"><label><input type="radio" name="condition_step1"> Новое</label></li>
+                                            <li class="category-item"><label><input type="radio" name="condition_step1"> Б/у</label></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="form-column">
+                                <div class="next-btn-container">
+                                    <button type="button" class="next-btn" onclick="goToStep2()">Далее ▶</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Шаг 2: Хочу получить -->
+                <div class="form-step" id="step2">
+                    <div class="form-grid">
+                        <div class="form-column">
+                            <!-- Пустая колонка для сохранения структуры -->
+                        </div>
+                        <div class="form-column">
+                            <h2>Категории для "Хочу получить"</h2>
+                            <div class="clear-selection" onclick="clearSelections('step2')">снять выделения</div>
+                            <ul class="category-list">
+                                <li class="category-item parent">
+                                    Жанр
+                                    <ul>
+                                        <li class="category-item"><label><input type="checkbox" class="genre_checkbox" name="genre_step2"> Детективы</label></li>
+                                        <li class="category-item"><label><input type="checkbox" class="genre_checkbox" name="genre_step2"> Фантастика</label></li>
+                                        <li class="category-item"><label><input type="checkbox" class="genre_checkbox" name="genre_step2"> Фэнтези</label></li>
+                                        <li class="category-item"><label><input type="checkbox" class="genre_checkbox" name="genre_step2"> Романтика</label></li>
+                                        <li class="category-item"><label><input type="checkbox" class="genre_checkbox" name="genre_step2"> Историческая литература</label></li>
+                                    </ul>
+                                </li>
+                                <li class="category-item parent">
+                                    Состояние
+                                    <ul>
+                                        <li class="category-item"><label><input type="radio" name="condition_step2"> Новое</label></li>
+                                        <li class="category-item"><label><input type="radio" name="condition_step2"> Б/у</label></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="form-column">
+                            <div class="next-btn-container">
+                                <button type="button" class="prev-btn" onclick="goToStep(1)">Назад</button>
+                                <button type="button" class="next-btn" id="nextBtnStep2" disabled onclick="goToStep3()">Далее ▶</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Шаг 3: Адрес доставки -->
+                <div class="form-step" id="step3">
+                    <div class="form-grid">
+                        <div class="form-column">
+                            <h2>Адрес доставки</h2>
+                            <div class="form-group">
+                                <label class="required">Фамилия</label>
+                                <input type="text" name="delivery_surname" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">Имя</label>
+                                <input type="text" name="delivery_name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Отчество (при наличии)</label>
+                                <input type="text" name="delivery_patronymic">
+                            </div>
+                            <div class="form-group">
+                                <label class="required">Город</label>
+                                <input type="text" name="delivery_city" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">Улица</label>
+                                <input type="text" name="delivery_street" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">Дом</label>
+                                <input type="text" name="delivery_house" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Квартира</label>
+                                <input type="text" name="delivery_apartment">
+                            </div>
+                            <div class="form-group">
+                                <label class="required">Индекс</label>
+                                <input type="text" name="delivery_postcode" pattern="\d{6}" required>
+                            </div>
+                        </div>
+                        <div class="form-column">
+                            <!-- Пустая колонка для сохранения структуры -->
+                        </div>
+                        <div class="form-column">
+                            <div class="next-btn-container">
+                                <button type="button" class="prev-btn" onclick="goToStep(2)">Назад</button>
+                                <button type="button" class="next-btn" onclick="submitForm()">Подтвердить данные</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="hintContainer" class="hint-tooltip"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        © BookSwap 2023. Все права защищены.
+    </footer>
+
+    <!-- Начало обновлённого скрипта -->
+    <script>
+        let currentStep = 1;
+        let formData = {};
+        // Предполагается, что userId будет получен из сессии или авторизации
+        const userId = 'USER_ID_FROM_AUTH'; // Замените на реальный ID пользователя при интеграции с сервером
+
+        // **Новая функция: Обновление header в зависимости от состояния авторизации**
+        function updateHeader() {
+            const authForm = document.querySelector('.auth-form');
+            const username = localStorage.getItem('username');
+            if (username) {
+                authForm.innerHTML = `
+                    <div class="auth-fields">
+                        <p>Добро пожаловать, ${username}!</p>
+                        <button type="button" onclick="logout()">Выйти</button>
+                    </div>
+                `;
+            } else {
+                authForm.innerHTML = `
+                    <div class="auth-fields">
+                        <input type="text" placeholder="Логин" name="login" id="loginInput">
+                        <input type="password" placeholder="Пароль" name="password" id="passwordInput">
+                        <button type="button" onclick="login()">Войти</button>
+                    </div>
+                    <div class="register-link">
+                        <a href="register.html">Нет аккаунта? Зарегистрируйтесь!</a>
+                    </div>
+                `;
+            }
+        }
+
+        // **Новая функция: Вход в систему**
+        function login() {
+            const loginInput = document.getElementById('loginInput').value;
+            const passwordInput = document.getElementById('passwordInput').value;
+
+            const params = new URLSearchParams({
+                userName: loginInput,
+                password: passwordInput
+            });
+            fetch(`https://serverbook-1-dhna.onrender.com/api/login?${params.toString()}`)
+                .then(response => {
+                    if (!response.ok) {
+                        alert("Ошибка входа");
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    localStorage.setItem('userId', data.userId);
+                    localStorage.setItem('username', data.username);
+                    const referrer = document.referrer || 'main1-1.html';
+                    window.location.assign(referrer);
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                });
+        };    
+        //     fetch('https://serverbook-1-dhna.onrender.com/api/login', {
+        //         method: 'GET', // Используем POST вместо GET для безопасности
+        //         // headers: {
+        //         //     'Content-Type': 'application/json'
+        //         // },
+        //         // body: JSON.stringify({ userName: loginInput, password: passwordInput })
+        //     })
+        //     .then(response => {
+        //         if (!response.ok) {
+        //             alert('Ошибка входа. Проверьте логин или пароль.');
+        //             throw new Error('Network response was not ok');
+        //         }
+        //         return response.json();
+        //     })
+        //     .then(data => {
+        //         localStorage.setItem('username', data.username); // Сохраняем имя пользователя
+        //         alert('Вы успешно вошли в аккаунт!');
+        //         updateHeader(); // Обновляем header без перезагрузки
+        //     })
+        //     .catch(error => {
+        //         console.error('Ошибка:', error);
+        //     });
+        // }
+
+        // **Новая функция: Выход из системы**
+        function logout() {
+            localStorage.removeItem('username');
+            updateHeader(); // Обновляем header обратно на форму входа
+        }
+
+        // Сохранение данных текущего шага
+        function preserveInputValues(step) {
+            if (step === 1) {
+                const inputs = document.querySelectorAll('#step1 input');
+                inputs.forEach(input => {
+                    const key = `step1_${input.name}`;
+                    if (input.type === 'checkbox' || input.type === 'radio') {
+                        formData[key] = input.checked;
+                    } else {
+                        formData[key] = input.value;
+                    }
+                });
+            } else if (step === 2) {
+                const inputs = document.querySelectorAll('#step2 input');
+                inputs.forEach(input => {
+                    const key = `step2_${input.name}`;
+                    formData[key] = input.checked;
+                });
+            } else if (step === 3) {
+                const inputs = document.querySelectorAll('#step3 input');
+                inputs.forEach(input => {
+                    const key = `step3_${input.name}`;
+                    formData[key] = input.value;
+                });
+            }
+        }
+
+        // Восстановление данных при переходе на шаг
+        function restoreInputValues(step) {
+            if (step === 1) {
+                const inputs = document.querySelectorAll('#step1 input');
+                inputs.forEach(input => {
+                    const key = `step1_${input.name}`;
+                    if (formData[key] !== undefined) {
+                        if (input.type === 'checkbox' || input.type === 'radio') {
+                            input.checked = formData[key];
+                        } else {
+                            input.value = formData[key] || '';
+                        }
+                    }
+                });
+            } else if (step === 2) {
+                const inputs = document.querySelectorAll('#step2 input');
+                inputs.forEach(input => {
+                    const key = `step2_${input.name}`;
+                    if (formData[key] !== undefined) {
+                        input.checked = formData[key];
+                    }
+                });
+            } else if (step === 3) {
+                const inputs = document.querySelectorAll('#step3 input');
+                inputs.forEach(input => {
+                    const key = `step3_${input.name}`;
+                    if (formData[key] !== undefined) {
+                        input.value = formData[key] || '';
+                    }
+                });
+            }
+        }
+
+        // Переключение между шагами
+        function goToStep(step) {
+            preserveInputValues(currentStep);
+            document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step${step}`).classList.add('active');
+            currentStep = step;
+            restoreInputValues(step);
+            updateFormSections();
+        }
+
+        // Обновление состояния секций формы
+        function updateFormSections() {
+            document.querySelectorAll('.form-section').forEach((el, index) => {
+                if (index + 1 < currentStep) {
+                    el.classList.remove('active', 'inactive');
+                } else if (index + 1 === currentStep) {
+                    el.classList.add('active');
+                    el.classList.remove('inactive');
+                } else {
+                    el.classList.remove('active');
+                    el.classList.add('inactive');
+                }
+            });
+        }
+
+        // Переход на второй шаг с валидацией
+        function goToStep2() {
+            if (document.getElementById('step1Form').checkValidity()) {
+                goToStep(2);
+            } else {
+                document.getElementById('step1Form').reportValidity();
+            }
+        }
+
+        // Переход на третий шаг с валидацией
+        function goToStep3() {
+            const checkedGenres = document.querySelectorAll('#step2 .genre_checkbox:checked').length;
+            if (checkedGenres > 0) {
+                goToStep(3);
+            } else {
+                alert('Пожалуйста, выберите хотя бы один жанр.');
+            }
+        }
+
+        // Сброс выделений категорий
+        function clearSelections(stepId) {
+            document.querySelectorAll(`#${stepId} .category-list input`).forEach(input => {
+                input.checked = false;
+            });
+            if (stepId === 'step2') {
+                document.getElementById('nextBtnStep2').disabled = true;
+            }
+        }
+
+        // Активация/деактивация кнопки "Далее" на втором шаге
+        document.querySelectorAll('#step2 .genre_checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const checkedGenres = document.querySelectorAll('#step2 .genre_checkbox:checked').length;
+                document.getElementById('nextBtnStep2').disabled = checkedGenres === 0;
+            });
+        });
+
+        // Автоформатирование ISBN
+        document.querySelectorAll('input[name="isbn"]').forEach(input => {
+            input.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/-/g, '');
+                if (value.length > 13) value = value.slice(0, 13);
+                let formatted = '';
+                if (value.length > 0) formatted += value.slice(0, 3);
+                if (value.length >= 4) formatted += '-' + value.slice(3, 4);
+                if (value.length >= 5) formatted += '-' + value.slice(4, 7);
+                if (value.length >= 8) formatted += '-' + value.slice(7, 12);
+                if (value.length >= 13) formatted += '-' + value.slice(12, 13);
+                e.target.value = formatted;
+            });
+        });
+
+        // Управление подсказками
+        function showHint(element) {
+            const hint = document.getElementById('hintContainer');
+            hint.style.display = 'block';
+            hint.textContent = element.dataset.hint;
+            hint.style.top = `${element.offsetTop + 40}px`;
+            hint.style.left = `${element.offsetLeft}px`;
+        }
+
+        function hideHint() {
+            document.getElementById('hintContainer').style.display = 'none';
+        }
+
+        // Динамическое обновление максимального года
+        const yearInput = document.querySelector('input[type="number"][name="year"]');
+        yearInput.max = new Date().getFullYear();
+        yearInput.value = yearInput.max;
+
+        // **Обновлённая функция: Отправка формы с проверкой авторизации**
+        async function submitForm() {
+            const username = localStorage.getItem('username');
+            if (!username) {
+                alert('Пожалуйста, войдите в систему, чтобы продолжить.');
+                return; // Прерываем выполнение, если пользователь не авторизован
+            }
+
+            preserveInputValues(3); // Сохраняем данные шага 3
+
+            // Проверка валидности обязательных полей шага 3
+            const step3Inputs = document.querySelectorAll('#step3 input[required]');
+            let valid = true;
+            step3Inputs.forEach(input => {
+                if (!input.checkValidity()) valid = false;
+            });
+            if (!valid) {
+                step3Inputs.forEach(input => input.reportValidity());
+                return;
+            }
+
+            try {
+                // 1. Создание автора (Author)
+                const authorData = {
+                    lastName: formData['step1_author_surname'],
+                    firstName: formData['step1_author_name'] || ''
+                };
+                const authorResponse = await fetch('/api/authors', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(authorData)
+                });
+                const author = await authorResponse.json();
+                if (!author._id) throw new Error('Ошибка создания автора');
+
+                // 2. Создание книги (BookLibrary)
+                const bookLibraryData = {
+                    idAuthor: author._id,
+                    bookName: formData['step1_book_title'],
+                    note: '' // Поле отсутствует в форме, оставляем пустым
+                };
+                const bookLibraryResponse = await fetch('/api/bookLibraries', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bookLibraryData)
+                });
+                const bookLibrary = await bookLibraryResponse.json();
+                if (!bookLibrary._id) throw new Error('Ошибка создания книги');
+
+                // 3. Создание предложения (OfferList)
+                const offerListData = {
+                    idBookLibrary: bookLibrary._id,
+                    idUser: userId,
+                    IBSN: formData['step1_isbn'] || '',
+                    yearPublishing: formData['step1_year'] ? new Date(formData['step1_year'], 0, 1) : undefined,
+                    idStatus: 'DEFAULT_STATUS_ID' // Замените на реальный ID статуса
+                };
+                const offerListResponse = await fetch('/api/offerLists', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(offerListData)
+                });
+                const offerList = await offerListResponse.json();
+                if (!offerList._id) throw new Error('Ошибка создания предложения');
+
+                // 4. Создание списка желаний (WishList)
+                const wishListData = {
+                    idUser: userId,
+                    idStatus: 'DEFAULT_STATUS_ID' // Замените на реальный ID статуса
+                    // idUserAddress добавим позже после создания адреса
+                };
+                const wishListResponse = await fetch('/api/wishLists', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(wishListData)
+                });
+                const wishList = await wishListResponse.json();
+                if (!wishList._id) throw new Error('Ошибка создания списка желаний');
+
+                // 5. Создание категорий для WishList (жанры и состояние)
+                const genres = Array.from(document.querySelectorAll('#step2 input[name="genre_step2"]:checked'))
+                    .map(input => input.parentElement.textContent.trim());
+                for (const genre of genres) {
+                    const categoryData = {
+                        name: genre,
+                        multiSelect: true
+                    };
+                    const categoryResponse = await fetch('/api/categories', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(categoryData)
+                    });
+                    const category = await categoryResponse.json();
+                    if (category._id) {
+                        const userValueCategoryData = {
+                            idUserList: wishList._id,
+                            idCategory: category._id
+                        };
+                        await fetch('/api/userValueCategories', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(userValueCategoryData)
+                        });
+                    }
+                }
+
+                const condition = document.querySelector('#step2 input[name="condition_step2"]:checked');
+                if (condition) {
+                    const conditionData = {
+                        name: condition.parentElement.textContent.trim(),
+                        multiSelect: false
+                    };
+                    const conditionResponse = await fetch('/api/categories', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(conditionData)
+                    });
+                    const conditionCategory = await conditionResponse.json();
+                    if (conditionCategory._id) {
+                        const userValueCategoryData = {
+                            idUserList: wishList._id,
+                            idCategory: conditionCategory._id
+                        };
+                        await fetch('/api/userValueCategories', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(userValueCategoryData)
+                        });
+                    }
+                }
+
+                // 6. Создание адреса доставки (UserAddress)
+                const addressData = {
+                    idUser: userId,
+                    addCountry: '', // Поле отсутствует в форме
+                    addrIndex: formData['step3_delivery_postcode'],
+                    addrCity: formData['step3_delivery_city'],
+                    addrStreet: formData['step3_delivery_street'],
+                    addrStructure: formData['step3_delivery_house'],
+                    addrApart: formData['step3_delivery_apartment'] || ''
+                };
+                const addressResponse = await fetch('/api/userAddresses', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(addressData)
+                });
+                const address = await addressResponse.json();
+                if (!address._id) throw new Error('Ошибка создания адреса');
+
+                // Обновление WishList с idUserAddress
+                wishListData.idUserAddress = address._id;
+                await fetch(`/api/wishLists/${wishList._id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(wishListData)
+                });
+
+                // 7. Создание записи обмена (ExchangeList)
+                const exchangeListData = {
+                    idOfferList1: offerList._id,
+                    idWishList1: wishList._id,
+                    idOfferList2: null, // Будет заполнено позже
+                    idWishList2: null,  // Будет заполнено позже
+                    isBoth: false
+                };
+                const exchangeListResponse = await fetch('/api/exchangeLists', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(exchangeListData)
+                });
+                const exchangeList = await exchangeListResponse.json();
+                if (!exchangeList._id) throw new Error('Ошибка создания записи обмена');
+
+                // 8. Создание записи пользователя в обмене (UserExchangeList)
+                const userExchangeListData = {
+                    idExchangeList: exchangeList._id,
+                    idOfferList: offerList._id,
+                    trackNumber: '', // Заполняется позже
+                    receiving: false
+                };
+                await fetch('/api/userExchangeLists', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userExchangeListData)
+                });
+
+                alert('Данные успешно отправлены!');
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при отправке данных: ' + error.message);
+            }
+        }
+
+        // Инициализация: обновляем header при загрузке страницы
+        document.addEventListener('DOMContentLoaded', updateHeader);
+    </script>
+    <!-- Конец обновлённого скрипта -->
+
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'91b1db4f79587bba',t:'MTc0MTA5NjM3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
+</html>
