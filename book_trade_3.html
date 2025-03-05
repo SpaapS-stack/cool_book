@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="trade.css">
+    <script src=" cookie.js"></script>
 </head>
 <body>
     <header class="header">
@@ -16,9 +17,9 @@
         </div>
         <form class="auth-form">
             <div class="auth-fields">
-                <input type="text" placeholder="Логин" name="login">
-                <input type="password" placeholder="Пароль" name="password">
-                <button type="submit"><a href="login.html">Войти</a></button>
+                <input type="text" placeholder="Логин" name="login" id="loginInput">
+                <input type="password" placeholder="Пароль" name="password" id="passwordInput">
+                <button type="button" id="loginButton">Войти</button> 
             </div>
             <div class="register-link">
                 <a href="register.html">Нет аккаунта? Зарегистрируйтесь!</a>
@@ -30,12 +31,13 @@
         <ul class="nav-list">
             <li><a href="main1-1.html">Главная</a></li>
             <li><a href="book_trade_3.html">Начать обмен</a></li>
-            <li><a href="#">Мои обмены</a></li>
-            <li><a href="#">Задать вопрос</a></li>
+            <li><a href="user.html">Мои обмены</a></li>
+            <li><a href="link.html">О нас</a></li>
         </ul>
     </nav>
 
     <main class="main-content">
+        <!-- Содержимое main остаётся без изменений -->
         <div class="content-wrapper">
             <div class="exchange-form">
                 <h1 class="form-header">Бланк обмена</h1>
@@ -202,13 +204,165 @@
         © BookSwap 2023. Все права защищены.
     </footer>
 
+    <!-- Начало обновлённого скрипта -->
     <script>
+
+        // // Функция для получения cookie по имени
+        // function getCookie(name) {
+        //     const value = `; ${document.cookie}`;
+        //     const parts = value.split(`; ${name}=`);
+        //     if (parts.length === 2) return parts.pop().split(';').shift();
+        // }
+        
+        // Функция для установки cookie
+        function setCookie(name, value, days) {
+            let expires = '';
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = `; expires=${date.toUTCString()}`;
+            }
+            document.cookie = `${name}=${value || ''}${expires}; path=/`;
+        }
+        
+        // Обновление header в зависимости от состояния авторизации
+        function updateHeader() {
+            const authForm = document.querySelector('.auth-form');
+            authForm.innerHTML = ''; // Очищаем текущее содержимое
+        
+            const username = getCookie('myUsername');
+            console.log('Cookie username:', username); // Отладка
+            if (username) {
+                const authFields = document.createElement('div');
+                authFields.className = 'auth-fields';
+        
+                const welcomeMsg = document.createElement('p');
+                welcomeMsg.textContent = `Добро пожаловать, ${username}!`;
+        
+                const logoutBtn = document.createElement('button');
+                logoutBtn.type = 'button';
+                logoutBtn.textContent = 'Выйти';
+                logoutBtn.addEventListener('click', logout);
+        
+                authFields.appendChild(welcomeMsg);
+                authFields.appendChild(logoutBtn);
+                authForm.appendChild(authFields);
+            } else {
+                const authFields = document.createElement('div');
+                authFields.className = 'auth-fields';
+        
+                const loginInput = document.createElement('input');
+                loginInput.type = 'text';
+                loginInput.placeholder = 'Логин';
+                loginInput.name = 'login';
+                loginInput.id = 'loginInput';
+        
+                const passwordInput = document.createElement('input');
+                passwordInput.type = 'password';
+                passwordInput.placeholder = 'Пароль';
+                passwordInput.name = 'password';
+                passwordInput.id = 'passwordInput';
+        
+                const loginBtn = document.createElement('button');
+                loginBtn.type = 'button';
+                loginBtn.textContent = 'Войти';
+                loginBtn.addEventListener('click', login);
+        
+                const registerLinkDiv = document.createElement('div');
+                registerLinkDiv.className = 'register-link';
+                const registerLink = document.createElement('a');
+                registerLink.href = 'register.html';
+                registerLink.textContent = 'Нет аккаунта? Зарегистрируйтесь!';
+                registerLinkDiv.appendChild(registerLink);
+        
+                authFields.append(loginInput, passwordInput, loginBtn);
+                authForm.append(authFields, registerLinkDiv);
+            }
+        }
+        
+        // Функция входа
+        function login() {
+            const loginInput = document.getElementById('loginInput').value;
+            const passwordInput = document.getElementById('passwordInput').value;
+        
+            const params = new URLSearchParams({
+                userName: loginInput,
+                password: passwordInput
+            });
+            fetch(`https://serverbook-1-dhna.onrender.com/api/login?${params.toString()}`)
+                .then(response => {
+                    if (!response.ok) {
+                        alert("Ошибка входа");
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then((data) => {console.log(data._id)
+                    document.cookie = `myData=${data._id}`;
+                    document.cookie = `myUsername=${data.userName}`;
+                    const referrer = document.referrer;
+                    window.location.assign(referrer);
+                    // localStorage.setItem('userId', data._id);
+                    // localStorage.setItem('username', data.username);
+                    // const referrer = document.referrer || 'main1-1.html';
+                    // window.location.assign(referrer);
+                })
+                // .then(data => {
+                //     alert(data);
+                //     localStorage.setItem('userId', data._Id);
+                //     localStorage.setItem('username', data.username);
+
+                // })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                });
+            // if (!loginInput || !passwordInput) {
+            //     alert('Заполните логин и пароль.');
+            //     return;
+            // }
+        
+            // console.log('Отправка запроса:', { userName: loginInput, password: passwordInput }); // Отладка
+        
+            // fetch('https://serverbook-1-dhna.onrender.com/api/login', {
+            //     method: 'GET',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     query: JSON.stringify({ userName: loginInput, password: passwordInput })
+            // })
+            // .then(response => {
+            //     console.log('Ответ сервера:', response.status, response.statusText); // Отладка
+            //     if (!response.ok) throw new Error(`Ошибка входа: ${response.status}`);
+            //     return response.json();
+            // })
+            // .then(data => {
+            //     console.log('Данные от сервера:', data); // Отладка
+            //     if (data.userName) {
+            //         setCookie('username', data.userName, 7);
+            //         alert('Успешный вход!');
+            //         updateHeader();
+            //     } else {
+            //         alert('Неверный логин или пароль.');
+            //     }
+            // })
+            // .catch(error => {
+            //     console.error('Ошибка:', error);
+            //     alert('Произошла ошибка при входе: ' + error.message);
+            // });
+        }
+        
+        // Функция выхода
+        function logout() {
+            document.cookie = 'myUsername=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+            updateHeader();
+        }
+        
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', updateHeader);
+        
+        // Переменные для управления шагами формы
         let currentStep = 1;
         let formData = {};
-        // Предполагается, что userId будет получен из сессии или авторизации
-        const userId = 'USER_ID_FROM_AUTH'; // Замените на реальный ID пользователя
-
-        // Сохранение данных текущего шага
+        
+        // Сохранение данных формы
         function preserveInputValues(step) {
             if (step === 1) {
                 const inputs = document.querySelectorAll('#step1 input');
@@ -234,8 +388,8 @@
                 });
             }
         }
-
-        // Восстановление данных при переходе на шаг
+        
+        // Восстановление данных формы
         function restoreInputValues(step) {
             if (step === 1) {
                 const inputs = document.querySelectorAll('#step1 input');
@@ -267,8 +421,8 @@
                 });
             }
         }
-
-        // Переключение между шагами
+        
+        // Переключение шагов формы
         function goToStep(step) {
             preserveInputValues(currentStep);
             document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
@@ -277,8 +431,7 @@
             restoreInputValues(step);
             updateFormSections();
         }
-
-        // Обновление состояния секций формы
+        
         function updateFormSections() {
             document.querySelectorAll('.form-section').forEach((el, index) => {
                 if (index + 1 < currentStep) {
@@ -292,8 +445,7 @@
                 }
             });
         }
-
-        // Переход на второй шаг с валидацией
+        
         function goToStep2() {
             if (document.getElementById('step1Form').checkValidity()) {
                 goToStep(2);
@@ -301,8 +453,7 @@
                 document.getElementById('step1Form').reportValidity();
             }
         }
-
-        // Переход на третий шаг с валидацией
+        
         function goToStep3() {
             const checkedGenres = document.querySelectorAll('#step2 .genre_checkbox:checked').length;
             if (checkedGenres > 0) {
@@ -311,63 +462,17 @@
                 alert('Пожалуйста, выберите хотя бы один жанр.');
             }
         }
-
-        // Сброс выделений категорий
-        function clearSelections(stepId) {
-            document.querySelectorAll(`#${stepId} .category-list input`).forEach(input => {
-                input.checked = false;
-            });
-            if (stepId === 'step2') {
-                document.getElementById('nextBtnStep2').disabled = true;
-            }
-        }
-
-        // Активация/деактивация кнопки "Далее" на втором шаге
-        document.querySelectorAll('#step2 .genre_checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const checkedGenres = document.querySelectorAll('#step2 .genre_checkbox:checked').length;
-                document.getElementById('nextBtnStep2').disabled = checkedGenres === 0;
-            });
-        });
-
-        // Автоформатирование ISBN
-        document.querySelectorAll('input[name="isbn"]').forEach(input => {
-            input.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/-/g, '');
-                if (value.length > 13) value = value.slice(0, 13);
-                let formatted = '';
-                if (value.length > 0) formatted += value.slice(0, 3);
-                if (value.length >= 4) formatted += '-' + value.slice(3, 4);
-                if (value.length >= 5) formatted += '-' + value.slice(4, 7);
-                if (value.length >= 8) formatted += '-' + value.slice(7, 12);
-                if (value.length >= 13) formatted += '-' + value.slice(12, 13);
-                e.target.value = formatted;
-            });
-        });
-
-        // Управление подсказками
-        function showHint(element) {
-            const hint = document.getElementById('hintContainer');
-            hint.style.display = 'block';
-            hint.textContent = element.dataset.hint;
-            hint.style.top = `${element.offsetTop + 40}px`;
-            hint.style.left = `${element.offsetLeft}px`;
-        }
-
-        function hideHint() {
-            document.getElementById('hintContainer').style.display = 'none';
-        }
-
-        // Динамическое обновление максимального года
-        const yearInput = document.querySelector('input[type="number"][name="year"]');
-        yearInput.max = new Date().getFullYear();
-        yearInput.value = yearInput.max;
-
-        // Отправка формы в MongoDB
+        
+        // Отправка формы с проверкой авторизации
         async function submitForm() {
-            preserveInputValues(3); // Сохраняем данные шага 3
-
-            // Проверка валидности обязательных полей шага 3
+            const username = getCookie('username');
+            if (!username) {
+                alert('Пожалуйста, войдите в систему.');
+                return;
+            }
+        
+            preserveInputValues(3);
+        
             const step3Inputs = document.querySelectorAll('#step3 input[required]');
             let valid = true;
             step3Inputs.forEach(input => {
@@ -377,183 +482,35 @@
                 step3Inputs.forEach(input => input.reportValidity());
                 return;
             }
-
-            if (!userId || userId === 'USER_ID_FROM_AUTH') {
-                alert('Пользователь не авторизован! Пожалуйста, войдите в систему.');
-                return;
-            }
-
+        
+            const exchangeData = {
+                author_surname: formData.step1_author_surname,
+                author_name: formData.step1_author_name,
+                book_title: formData.step1_book_title,
+                isbn: formData.step1_isbn,
+                year: formData.step1_year,
+                genre: Array.from(document.querySelectorAll('#step2 input[name="genre_step2"]:checked'))
+                    .map(cb => cb.parentElement.textContent.trim()),
+                condition: document.querySelector('#step1 input[name="condition_step1"]:checked')
+                    ?.parentElement.textContent.trim() || ''
+            };
+        
+            console.log('Отправка данных обмена:', exchangeData); // Отладка
+        
             try {
-                // 1. Создание автора (Author)
-                const authorData = {
-                    lastName: formData['step1_author_surname'],
-                    firstName: formData['step1_author_name'] || ''
-                };
-                const authorResponse = await fetch('/api/authors', {
+                const response = await fetch('https://serverbook-1-dhna.onrender.com/api/exchangeBook', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(authorData)
+                    body: JSON.stringify(exchangeData)
                 });
-                const author = await authorResponse.json();
-                if (!author._id) throw new Error('Ошибка создания автора');
-
-                // 2. Создание книги (BookLibrary)
-                const bookLibraryData = {
-                    idAuthor: author._id,
-                    bookName: formData['step1_book_title'],
-                    note: '' // Поле отсутствует в форме, оставляем пустым
-                };
-                const bookLibraryResponse = await fetch('/api/bookLibraries', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(bookLibraryData)
-                });
-                const bookLibrary = await bookLibraryResponse.json();
-                if (!bookLibrary._id) throw new Error('Ошибка создания книги');
-
-                // 3. Создание предложения (OfferList)
-                const offerListData = {
-                    idBookLibrary: bookLibrary._id,
-                    idUser: userId,
-                    IBSN: formData['step1_isbn'] || '',
-                    yearPublishing: formData['step1_year'] ? new Date(formData['step1_year'], 0, 1) : undefined,
-                    idStatus: 'DEFAULT_STATUS_ID' // Замените на реальный ID статуса
-                };
-                const offerListResponse = await fetch('/api/offerLists', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(offerListData)
-                });
-                const offerList = await offerListResponse.json();
-                if (!offerList._id) throw new Error('Ошибка создания предложения');
-
-                // 4. Создание списка желаний (WishList)
-                const wishListData = {
-                    idUser: userId,
-                    idStatus: 'DEFAULT_STATUS_ID' // Замените на реальный ID статуса
-                    // idUserAddress добавим позже после создания адреса
-                };
-                const wishListResponse = await fetch('/api/wishLists', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(wishListData)
-                });
-                const wishList = await wishListResponse.json();
-                if (!wishList._id) throw new Error('Ошибка создания списка желаний');
-
-                // 5. Создание категорий для WishList (жанры и состояние)
-                const genres = Array.from(document.querySelectorAll('#step2 input[name="genre_step2"]:checked'))
-                    .map(input => input.parentElement.textContent.trim());
-                for (const genre of genres) {
-                    const categoryData = {
-                        name: genre,
-                        multiSelect: true
-                    };
-                    const categoryResponse = await fetch('/api/categories', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(categoryData)
-                    });
-                    const category = await categoryResponse.json();
-                    if (category._id) {
-                        const userValueCategoryData = {
-                            idUserList: wishList._id,
-                            idCategory: category._id
-                        };
-                        await fetch('/api/userValueCategories', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(userValueCategoryData)
-                        });
-                    }
-                }
-
-                const condition = document.querySelector('#step2 input[name="condition_step2"]:checked');
-                if (condition) {
-                    const conditionData = {
-                        name: condition.parentElement.textContent.trim(),
-                        multiSelect: false
-                    };
-                    const conditionResponse = await fetch('/api/categories', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(conditionData)
-                    });
-                    const conditionCategory = await conditionResponse.json();
-                    if (conditionCategory._id) {
-                        const userValueCategoryData = {
-                            idUserList: wishList._id,
-                            idCategory: conditionCategory._id
-                        };
-                        await fetch('/api/userValueCategories', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(userValueCategoryData)
-                        });
-                    }
-                }
-
-                // 6. Создание адреса доставки (UserAddress)
-                const addressData = {
-                    idUser: userId,
-                    addCountry: '', // Поле отсутствует в форме
-                    addrIndex: formData['step3_delivery_postcode'],
-                    addrCity: formData['step3_delivery_city'],
-                    addrStreet: formData['step3_delivery_street'],
-                    addrStructure: formData['step3_delivery_house'],
-                    addrApart: formData['step3_delivery_apartment'] || ''
-                };
-                const addressResponse = await fetch('/api/userAddresses', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(addressData)
-                });
-                const address = await addressResponse.json();
-                if (!address._id) throw new Error('Ошибка создания адреса');
-
-                // Обновление WishList с idUserAddress
-                wishListData.idUserAddress = address._id;
-                await fetch(`/api/wishLists/${wishList._id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(wishListData)
-                });
-
-                // 7. Создание записи обмена (ExchangeList)
-                const exchangeListData = {
-                    idOfferList1: offerList._id,
-                    idWishList1: wishList._id,
-                    idOfferList2: null, // Будет заполнено позже
-                    idWishList2: null,  // Будет заполнено позже
-                    isBoth: false
-                };
-                const exchangeListResponse = await fetch('/api/exchangeLists', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(exchangeListData)
-                });
-                const exchangeList = await exchangeListResponse.json();
-                if (!exchangeList._id) throw new Error('Ошибка создания записи обмена');
-
-                // 8. Создание записи пользователя в обмене (UserExchangeList)
-                const userExchangeListData = {
-                    idExchangeList: exchangeList._id,
-                    idOfferList: offerList._id,
-                    trackNumber: '', // Заполняется позже
-                    receiving: false
-                };
-                await fetch('/api/userExchangeLists', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(userExchangeListData)
-                });
-
+                console.log('Ответ сервера на обмен:', response.status, response.statusText); // Отладка
+                if (!response.ok) throw new Error('Ошибка отправки');
                 alert('Данные успешно отправлены!');
             } catch (error) {
                 console.error('Ошибка:', error);
-                alert('Произошла ошибка при отправке данных: ' + error.message);
+                alert('Произошла ошибка при отправке данных.');
             }
         }
-    </script>
+        </script>
 </body>
 </html>
