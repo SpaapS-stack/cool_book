@@ -515,6 +515,98 @@ footer {
     letter-spacing: 1px;
 }
 
+.profile-card {
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(0);
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+.profile-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+}
+
+.role::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    vertical-align: middle;
+    background-size: contain;
+}
+
+.Teamlead::before {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%234CAF50"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>');
+}
+
+.Frontend::before {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23e74c3c"><path d="M20 5h-9.586L8.707 3.293 7.293 4.707 11.586 9H4v12h16V5zm-14 2h12v10H6V7z"/></svg>');
+}
+
+.Backend::before {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%233498db"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 12v-3h-4v-2h4v-3l4 4-4 4z"/></svg>');
+}
+
+.role {
+    position: relative;
+    padding: 12px;
+    border-radius: 6px;
+    max-width: 700px;
+    margin: 0 auto;
+    overflow: hidden;
+
+    line-height: 1.4;
+}
+
+
+
+.responsive-table td {
+    border: none;
+    background: none;
+}
+
+.responsive-table tr {
+    background: none !important;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.profile-image {
+    animation: float 4s ease-in-out infinite;
+}
+
+.content-wrapper {
+    background: rgba(255,255,255,0.95);
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 1200px;
+}
+
+@media (max-width: 768px) {
+    .role::before {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .profile-card {
+        padding: 10px;
+    }
+    
+    .content-wrapper {
+        padding: 1rem;
+        margin: 1rem;
+    }
+}
 /* Адаптация для мобильных */
 @media screen and (max-width: 768px) {
     .profile-image {
@@ -528,5 +620,51 @@ footer {
     
     .role {
         font-size: 0.9em;
+    }
+}
+
+.role-position {
+    color: #4CAF50;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-size: 1.1em;
+    margin-bottom: 8px;
+}
+
+/* Удалить или заменить все стили, связанные с hover для role-description */
+/* Добавить/изменить в CSS: */
+
+.role-description {
+    color: #333;
+    font-size: 0.95em;
+    line-height: 1.5;
+    max-width: 600px;
+    margin: 0 auto;
+    word-wrap: break-word;
+    opacity: 1; /* Убедимся, что текст всегда виден */
+    display: block; /* Убедимся, что блок всегда отображается */
+    transition: opacity 0.3s ease; /* Плавное изменение прозрачности */
+}
+
+/* Удалить все hover-эффекты, скрывающие текст */
+/* Например, если были такие стили: */
+.role-description:hover {
+    opacity: 1;
+}
+
+.responsive-table td {
+    vertical-align: middle;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .role-position {
+        font-size: 1em;
+    }
+    
+    .role-description {
+        font-size: 0.85em;
+        padding: 0 10px;
     }
 }

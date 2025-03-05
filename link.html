@@ -6,7 +6,8 @@
     <title>BookSwap - Начать обмен</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="trade.css">
+    <link rel="stylesheet" href="link.css">
+    <script src=" cookie.js"></script>
 </head>
 <body>
     <header class="header">
@@ -16,9 +17,9 @@
         </div>
         <form class="auth-form">
             <div class="auth-fields">
-                <input type="text" placeholder="Логин" name="login">
-                <input type="password" placeholder="Пароль" name="password">
-                <button type="submit"><a href="login.html">Войти</a></button>
+                <input type="text" placeholder="Логин" name="login" id="loginInput">
+                <input type="password" placeholder="Пароль" name="password" id="passwordInput">
+                <button type="button" id="loginButton">Войти</button> 
             </div>
             <div class="register-link">
                 <a href="register.html">Нет аккаунта? Зарегистрируйтесь!</a>
@@ -30,84 +31,186 @@
         <ul class="nav-list">
             <li><a href="main1-1.html">Главная</a></li>
             <li><a href="book_trade_3.html">Начать обмен</a></li>
-            <li><a href="#">Мои обмены</a></li>
-            <li><a href="#">Задать вопрос</a></li>
+            <li><a href="user.html">Мои обмены</a></li>
+            <li><a href="link.html">О нас</a></li>
         </ul>
     </nav>
 
     <main class="main-content">
         <div class="content-wrapper">
             <div class="table-container">
-            <table class="responsive-table">
-                <thead>
-                    <tr>
-                        <td data-label="Название">
-                            <img src="Umh_SawUa7c.jpg" alt="Молчанов Никита" class="profile-image">
-                            <div class="name">Молчанов Никита</div>
-                        </td>
-                        <td data-label="Описание" class="role">Тех.Лид</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- 11 строк с примерными данными -->
-                    <tr>
-<td data-label="Название">
-<img src="YitwmfIMdQ.jpg" alt="Михаил Руськин" class="profile-image">
-<div class="name">Михаил Руськин</div>
-</td>
-<td data-label="Описание" class="role">Frontend - проспал показ сайта фыукенроглрпавывапролбррапвыфвапролдлреуывыапролджорпаыфваполдлравыывапролрпввыфапролпвыа </td>
-</tr>
-<tr>
-<td data-label="Название">
-<img src="bTGOLxNRn7s.jpg" alt="Никита Смолькин" class="profile-image">
-<div class="name">Никита Смолькин
-</div>
-</td>
-<td data-label="Описание" class="role">Тестировщик - Тестировал программу на предмет ошибок и прочего дерьма.укваепрольртпиаыфвкаепнрголшьтриывкчненрцуыеинткепиумсяауивятаопиаеыу
-</td>
-
-</td>
-
-
-</td>
-</tr>
-<tr>
-<td data-label="Название">
-<img src="l_538mfEirU.jpg" alt="Узеир Мусаев" class="profile-image">
-<div class="name">Узеир Мусаев</div>
-</td>
-<td data-label="Описание" class="role">Тестировщик - тоже проспал показ сайта)</td>
-</td>
-</tr>
-<td data-label="Название">
-<img src="j0GgpDtW2A4.jpg" alt="Андрей Семенов" class="profile-image">
-<div class="name">Андрей Семенов</div>
-</td>
-<td data-label="Описание" class="role">Teamlide </td>
-</td>
-<tr>
-<td data-label="Название">
-<img src="3F3F.jpg" alt="Никита Розгоняев" class="profile-image">
-<div class="name">Никита Розгоняев</div>
-</td>
-<td data-label="Описание" class="role">Beckend - отвечает за серверную составляющую сайта
-</td>
-<tr>
-<td data-label="Название">
-<img src="3F3F.jpg" alt="Никита Розгоняев" class="profile-image">
-<div class="name">Никита Розгоняев</div>
-</td>
-<td data-label="Описание" class="role">Beckend - отвечает за серверную составляющую сайта
-</td>
-
-                </tbody>
-            </table>
+                <table class="responsive-table">
+                    <thead>
+                        <tr>
+                            <td data-label="Название">
+                                <img src="cat5.png" alt="Молчанов Никита" class="profile-image">
+                                <div class="name">Молчанов Никита</div>
+                            </td>
+                            <td data-label="Описание" class="role">
+                                <div class="role-position">Тех.Лид. и Frontend. </div>
+                                <div class="role-description">Верстка. Логика оформления заказа и авторизации.</div>
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-label="Название">
+                                <img src="cat1.jpg" alt="Михаил Руськин" class="profile-image">
+                                <div class="name">Михаил Руськин</div>
+                            </td>
+                            <td data-label="Описание" class="role">
+                                <div class="role-position">Frontend</div>
+                                <div class="role-description">Фронтенд. Верстка. Логика регистрации.</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td data-label="Название">
+                                <img src="cat3.png" alt="Никита Смолькин" class="profile-image">
+                                <div class="name">Никита Смолькин</div>
+                            </td>
+                            <td data-label="Описание" class="role">
+                                <div class="role-position">Тестировщик</div>
+                                <div class="role-description">Нагрузочное тестирование. Составление тест-кейсов.</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td data-label="Название">
+                                <img src="cat4.png" alt="Узеир Мусаев" class="profile-image">
+                                <div class="name">Узеир Мусаев</div>
+                            </td>
+                            <td data-label="Описание" class="role">
+                                <div class="role-position">Тестировщик</div>
+                                <div class="role-description">Создание тест-кейсов.</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td data-label="Название">
+                                <img src="cat.png" alt="Андрей Семенов" class="profile-image">
+                                <div class="name">Андрей Семенов</div>
+                            </td>
+                            <td data-label="Описание" class="role">
+                                <div class="role-position">Teamlead</div>
+                                <div class="role-description">Разработка плана проекта. Организация рабочего плана.</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td data-label="Название">
+                                <img src="cat6.jpg" alt="Никита Розгоняев" class="profile-image">
+                                <div class="name">Никита Розгоняев</div>
+                            </td>
+                            <td data-label="Описание" class="role">
+                                <div class="role-position">Backend</div>
+                                <div class="role-description">Серверная часть. Эндпоинты.</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td data-label="Название">
+                                <img src="cat7.jpg" alt="Даниил Розгоняев" class="profile-image">
+                                <div class="name">Даниил Розгоняев</div>
+                            </td>
+                            <td data-label="Описание" class="role">
+                                <div class="role-position">Backend</div>
+                                <div class="role-description">Серверная часть. База данных. Логика авторизации и регистрации.</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
     </main>
 
     <footer>
-        © BookSwap 2025. Все права защищены ЗСТ РОССИИ ПО Самарской обл.
+        © BookSwap 2023.
     </footer>
+    <script>
+        
+function updateHeader() {
+            const authForm = document.querySelector('.auth-form');
+            authForm.innerHTML = ''; // Очищаем текущее содержимое
+        
+            const username = getCookie('myUsername');
+            console.log('Cookie username:', username); // Отладка
+            if (username) {
+                const authFields = document.createElement('div');
+                authFields.className = 'auth-fields';
+        
+                const welcomeMsg = document.createElement('p');
+                welcomeMsg.textContent = `Добро пожаловать, ${username}!`;
+        
+                const logoutBtn = document.createElement('button');
+                logoutBtn.type = 'button';
+                logoutBtn.textContent = 'Выйти';
+                logoutBtn.addEventListener('click', logout);
+        
+                authFields.appendChild(welcomeMsg);
+                authFields.appendChild(logoutBtn);
+                authForm.appendChild(authFields);
+            } else {
+                const authFields = document.createElement('div');
+                authFields.className = 'auth-fields';
+        
+                const loginInput = document.createElement('input');
+                loginInput.type = 'text';
+                loginInput.placeholder = 'Логин';
+                loginInput.name = 'login';
+                loginInput.id = 'loginInput';
+        
+                const passwordInput = document.createElement('input');
+                passwordInput.type = 'password';
+                passwordInput.placeholder = 'Пароль';
+                passwordInput.name = 'password';
+                passwordInput.id = 'passwordInput';
+        
+                const loginBtn = document.createElement('button');
+                loginBtn.type = 'button';
+                loginBtn.textContent = 'Войти';
+                loginBtn.addEventListener('click', login);
+        
+                const registerLinkDiv = document.createElement('div');
+                registerLinkDiv.className = 'register-link';
+                const registerLink = document.createElement('a');
+                registerLink.href = 'register.html';
+                registerLink.textContent = 'Нет аккаунта? Зарегистрируйтесь!';
+                registerLinkDiv.appendChild(registerLink);
+        
+                authFields.append(loginInput, passwordInput, loginBtn);
+                authForm.append(authFields, registerLinkDiv);
+            }
+        }
+        function login() {
+            const loginInput = document.getElementById('loginInput').value;
+            const passwordInput = document.getElementById('passwordInput').value;
+        
+            const params = new URLSearchParams({
+                userName: loginInput,
+                password: passwordInput
+            });
+            fetch(`https://serverbook-1-dhna.onrender.com/api/login?${params.toString()}`)
+                .then(response => {
+                    if (!response.ok) {
+                        alert("Ошибка входа");
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then((data) => {console.log(data._id)
+                    document.cookie = `myData=${data._id}`;
+                    document.cookie = `myUsername=${data.userName}`;
+                    const referrer = document.referrer;
+                    window.location.assign(referrer);
+
+                })
+
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                });
+
+        }
+        function logout() {
+            document.cookie = 'username=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+            updateHeader();
+        }
+        document.addEventListener('DOMContentLoaded', updateHeader);
+    </script>
 </body>
 </html>
