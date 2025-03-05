@@ -30,7 +30,7 @@
         <ul class="nav-list">
             <li><a href="main1-1.html">Главная</a></li>
             <li><a href="book_trade_3.html">Начать обмен</a></li>
-            <li><a href="#">Мои обмены</a></li>
+            <li><a href="user.html">Мои обмены</a></li>
             <li><a href="#">Задать вопрос</a></li>
         </ul>
     </nav>
@@ -73,59 +73,133 @@
     </footer>
 
     <script>
-        const allBooks = Array.from({length: 25}, (_, i) => ({
-            title: `Книга ${i + 1}`,
-            author: `Автор ${i + 1}`,
-            genre: 'Художественная',
-            cover: i % 2 === 0 ? 'book-cover.jpg' : null
-        }));
+        const cookies = document.cookie.split('; ');
+        const myDataCookie = cookies.find(row => row.startsWith('myData='));
+        const data = myDataCookie ? myDataCookie.split('=')[1] : null;
+        console.log(data); // "Hello, world!"
+    // Обновление интерфейса авторизации
+    function updateAuthDisplay() {
+        let karp = localStorage.getItem("userId")
 
-        let currentPage = 1;
-        const booksPerPage = 10;
-
-        function renderBooks(books) {
-            const container = document.getElementById('bookContainer');
-            container.innerHTML = books.map(book => `
-                <div class="book-card">
-                    ${book.cover ? 
-                        `<img src="${book.cover}" class="book-cover" alt="${book.title}">` : 
-                        `<div class="book-cover" style="background: #eee;"></div>`
-                    }
-                    <div class="book-info">
-                        <h3>${book.title}</h3>
-                        <p>${book.author}</p>
-                        <p>Жанр: ${book.genre}</p>
-                        <a href="/exchange" class="exchange-btn">Оформить</a>
+        console.log(karp);
+        const username = localStorage.getItem('username');
+        const authContainer = document.getElementById('authContainer');
+        if (username) {
+            authContainer.innerHTML = `
+                <p>Добро пожаловать, ${username}!</p>
+                <a href="#" onclick="logout()">Выйти</a>
+            `;
+        } else {
+            authContainer.innerHTML = `
+                <form id="authForm" class="auth-form">
+                    <div class="auth-fields">
+                        <input type="text" placeholder="Логин" name="login">
+                        <input type="password" placeholder="Пароль" name="password">
+                        <button type="submit" onclick="handleLogin(event)">Войти</button>
                     </div>
-                </div>
-            `).join('');
+                    <div class="register-link">
+                        <a href="register.html">Нет аккаунта? Зарегистрируйтесь!</a>
+                    </div>
+                </form>
+            `;
         }
+    }
 
-        function updatePagination(totalItems) {
-            const pages = Math.ceil(totalItems / booksPerPage);
-            const paginationHTML = Array.from({length: pages}, (_, i) => `
-                <button class="page-btn ${i + 1 === currentPage ? 'active' : ''}" 
-                        onclick="changePage(${i + 1})">
-                    ${i + 1}
-                </button>
-            `).join('');
+    // Обработка входа
+    function handleLogin(event) {
+        event.preventDefault();
+        const login = document.querySelector('input[name="login"]').value;
+        const password = document.querySelector('input[name="password"]').value;
 
-            document.querySelectorAll('.pagination').forEach(el => {
-                el.innerHTML = paginationHTML;
+        const params = new URLSearchParams({
+            userName: login,
+            password: password
+        });
+
+        fetch(`https://serverbook-1-dhna.onrender.com/api/login?${params.toString()}`)
+            .then(response => {
+                if (!response.ok) {
+                    alert("Ошибка входа");
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                localStorage.setItem('userId', data.userId);
+                localStorage.setItem('username', data.username);
+                updateAuthDisplay();
+                alert('Вы успешно вошли в систему!');
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Ошибка авторизации: ' + error.message);
             });
-        }
+    }
 
-        function changePage(page) {
-            currentPage = page;
-            const start = (page - 1) * booksPerPage;
-            const end = start + booksPerPage;
-            const booksToShow = allBooks.slice(start, end);
-            
-            renderBooks(booksToShow);
-            updatePagination(allBooks.length);
-        }
+    // Выход из системы
+    function logout() {
+        localStorage.removeItem('userId');
+        localStorage.removeItem('username');
+        updateAuthDisplay();
+    }
 
-        changePage(1);
+    // Проверка состояния при загрузке
+    document.addEventListener('DOMContentLoaded', updateAuthDisplay);
+
+    // Существующий код для работы с книгами и пагинацией
+    const allBooks = Array.from({length: 25}, (_, i) => ({
+        title: `Книга ${i + 1}`,
+        author: `Автор ${i + 1}`,
+        genre: 'Художественная',
+        cover: i % 2 === 0 ? 'book-cover.jpg' : null
+    }));
+    let currentPage = 1;
+    const booksPerPage = 10;
+
+    function renderBooks(books) {
+        const container = document.getElementById('bookContainer');
+        container.innerHTML = books.map(book => `
+            <div class="book-card">
+                ${book.cover ? 
+                    `<img src="${book.cover}" class="book-cover" alt="${book.title}">` : 
+                    `<div class="book-cover" style="background: #eee;"></div>`
+                }
+                <div class="book-info">
+                    <h3>${book.title}</h3>
+                    <p>${book.author}</p>
+                    <p>Жанр: ${book.genre}</p>
+                    <a href="/exchange" class="exchange-btn">Оформить</a>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function updatePagination(totalItems) {
+        const pages = Math.ceil(totalItems / booksPerPage);
+        const paginationHTML = Array.from({length: pages}, (_, i) => `
+            <button class="page-btn ${i + 1 === currentPage ? 'active' : ''}" 
+                    onclick="changePage(${i + 1})">
+                ${i + 1}
+            </button>
+        `).join('');
+
+        document.querySelectorAll('.pagination').forEach(el => {
+            el.innerHTML = paginationHTML;
+        });
+    }
+
+    function changePage(page) {
+        currentPage = page;
+        const start = (page - 1) * booksPerPage;
+        const end = start + booksPerPage;
+        const booksToShow = allBooks.slice(start, end);
+        
+        renderBooks(booksToShow);
+        updatePagination(allBooks.length);
+    }
+
+    changePage(1);
+</script>
     </script>
 </body>
 </html>
