@@ -75,7 +75,6 @@
                 userName: name,
                 password: password
             });
-
             fetch(`https://serverbook-1-dhna.onrender.com/api/login?${params.toString()}`)
                 .then(response => {
                     if (!response.ok) {
@@ -84,9 +83,22 @@
                     }
                     return response.json();
                 })
-                .then(data => {
-                    window.location.assign("main1-1.html");
+                .then((data) => {console.log(data._id)
+                    document.cookie = `myData=${data._id}`;
+                    document.cookie = `myUsername=${data.userName}`;
+                    const referrer = document.referrer || 'main1-1.html';
+                    window.location.assign(referrer);
+                    // localStorage.setItem('userId', data._id);
+                    // localStorage.setItem('username', data.username);
+                    // const referrer = document.referrer || 'main1-1.html';
+                    // window.location.assign(referrer);
                 })
+                // .then(data => {
+                //     alert(data);
+                //     localStorage.setItem('userId', data._Id);
+                //     localStorage.setItem('username', data.username);
+
+                // })
                 .catch(error => {
                     console.error('Ошибка:', error);
                 });
