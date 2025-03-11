@@ -6,7 +6,28 @@
     <title>BookSwap - Мои обмены</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="user.css">
+    <script src="cookie.js"></script>
+    <style>
+        /* Стиль для кнопки "Выйти" */
+        .logout-btn {
+            padding: 8px 20px;
+            background: #4CAF50;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            transition: background 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .logout-btn:hover {
+            background: #45a049;
+        }
+    </style>
 </head>
 <body>
     <header class="header">
@@ -14,20 +35,18 @@
             <img src="logo.png" class="logo" alt="BookSwap Logo" onerror="this.src='placeholder-logo.png'">
             <h1>BookSwap</h1>
         </div>
-        <form class="auth-form">
-            <div class="auth-fields">
-                <p>Добро пожаловать, <span id="username">Гость</span>!</p>
-                <a href="#" onclick="logout()">Выйти</a>
-            </div>
-        </form>
+        <div class="auth-fields">
+            <p>Добро пожаловать, <span id="username"></span>!</p>
+            <a href="#" class="logout-btn" onclick="logout()">Выйти</a>
+        </div>
     </header>
 
     <nav class="nav">
         <ul class="nav-list">
             <li><a href="main1-1.html">Главная</a></li>
             <li><a href="book_trade_3.html">Начать обмен</a></li>
-            <li><a href="my_exchanges.html" class="active">Мои обмены</a></li>
-            <li><a href="#">Задать вопрос</a></li>
+            <li><a href="user.html" class="active">Мои обмены</a></li>
+            <li><a href="link.html">О нас</a></li>
         </ul>
     </nav>
 
@@ -42,12 +61,28 @@
                     <li><a href="#book_reviews" onclick="showSection('book_reviews')">Отзывы на книги</a></li>
                     <li><a href="#personal_data" onclick="showSection('personal_data')">Личные данные</a></li>
                     <li><a href="#archive" onclick="showSection('archive')">Архив</a></li>
-                    <li><a href="#" onclick="logout()">Выйти</a></li>
+                    <li><a href="#" class="logout-btn" onclick="logout()">Выйти</a></li>
                 </ul>
             </aside>
 
             <div class="exchange-content">
-                <!-- Раздел: Предложения для обмена -->
+                <!-- Раздел: Личные данные -->
+                <section id="personal_data" class="exchange-section">
+                    <h2>Личные данные</h2>
+                    <form class="personal-data-form" onsubmit="savePersonalData(event)">
+                        <input type="text" placeholder="Имя" name="firstName" id="firstName">
+                        <input type="text" placeholder="Фамилия" name="lastName" id="lastName">
+                        <input type="text" placeholder="Отчество" name="secondName" id="secondName">
+                        <input type="text" placeholder="Страна" name="addCountry" id="addCountry">
+                        <input type="text" placeholder="Индекс" name="addrIndex" id="addrIndex">
+                        <input type="text" placeholder="Город" name="addrCity" id="addrCity">
+                        <input type="text" placeholder="Улица" name="addrStreet" id="addrStreet">
+                        <input type="text" placeholder="Дом" name="addrStructure" id="addrStructure">
+                        <input type="text" placeholder="Квартира" name="addrApart" id="addrApart">
+                        <button type="submit" class="save-btn">Сохранить</button>
+                    </form>
+                </section>
+                <!-- Остальные разделы остаются без изменений -->
                 <section id="proposals" class="exchange-section active">
                     <h2>Предложения для обмена</h2>
                     <div class="proposal-group">
@@ -87,7 +122,6 @@
                     </div>
                 </section>
 
-                <!-- Раздел: Хочу обменять -->
                 <section id="want_exchange" class="exchange-section">
                     <h2>Хочу обменять</h2>
                     <div class="book-list">
@@ -102,7 +136,6 @@
                     </div>
                 </section>
 
-                <!-- Раздел: Хочу получить -->
                 <section id="want_receive" class="exchange-section">
                     <h2>Хочу получить</h2>
                     <div class="book-list">
@@ -113,7 +146,6 @@
                     </div>
                 </section>
 
-                <!-- Раздел: Активные обмены -->
                 <section id="active_exchanges" class="exchange-section">
                     <h2>Активные обмены</h2>
                     <div class="proposal-list">
@@ -125,7 +157,6 @@
                     </div>
                 </section>
 
-                <!-- Раздел: Отзывы на книги -->
                 <section id="book_reviews" class="exchange-section">
                     <h2>Отзывы на книги</h2>
                     <form class="review-form">
@@ -139,23 +170,6 @@
                     </form>
                 </section>
 
-                <!-- Раздел: Личные данные -->
-                <section id="personal_data" class="exchange-section">
-                    <h2>Личные данные</h2>
-                    <form class="personal-data-form">
-                        <input type="text" placeholder="Фамилия" name="surname">
-                        <input type="text" placeholder="Имя" name="name">
-                        <input type="text" placeholder="Отчество" name="patronymic">
-                        <input type="text" placeholder="Город" name="city">
-                        <input type="text" placeholder="Улица" name="street">
-                        <input type="text" placeholder="Дом" name="house">
-                        <input type="text" placeholder="Квартира" name="apartment">
-                        <input type="text" placeholder="Индекс" name="postcode">
-                        <button type="submit" class="save-btn">Сохранить</button>
-                    </form>
-                </section>
-
-                <!-- Раздел: Архив -->
                 <section id="archive" class="exchange-section">
                     <h2>Архив</h2>
                     <div class="proposal-list">
@@ -175,22 +189,115 @@
     </footer>
 
     <script>
-        const cookies = document.cookie.split('; ');
-        const myDataCookie = cookies.find(row => row.startsWith('myData='));
-        const isAuthId = myDataCookie ? myDataCookie.split('=')[1] : null;
-        const myDataCookie2 = cookies.find(row => row.startsWith('myUsername='));
-        const isAuthUser = myDataCookie2 ? myDataCookie2.split('=')[1] : null;
-        console.log(data); // "Hello, world!"
-        console.log("user",isAuthUser)
-        // Проверка авторизации пользователя
+        // Функция для установки cookie
+        function setCookie(name, value, days) {
+            let expires = '';
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = `; expires=${date.toUTCString()}`;
+            }
+            document.cookie = `${name}=${value || ''}${expires}; path=/`;
+        }
+
+        // Проверка авторизации и загрузка данных
         document.addEventListener('DOMContentLoaded', () => {
-            // const username = document.cookie.split('userName') || 'Гость';
-            const username = isAuthUser || 'Гость';
-            document.getElementById('username').textContent = username;
-            if (!isAuth) {
+            const username = getCookie('username');
+            if (!username) {
                 window.location.href = 'login.html';
+            } else {
+                document.getElementById('username').textContent = username;
+                loadPersonalData(); // Загружаем данные при открытии страницы
             }
         });
+
+        // Функция выхода
+        function logout() {
+            setCookie('username', '', -1);
+            setCookie('userId', '', -1); // Удаляем userId при выходе
+            window.location.href = 'login.html';
+        }
+
+        // Функция загрузки личных данных
+        function loadPersonalData() {
+            const userId = getCookie('userId');
+            if (!userId) {
+                alert('Ошибка: пользователь не идентифицирован');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            fetch(`https://serverbook-1-dhna.onrender.com/api/getUserData?userId=${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Ошибка загрузки данных');
+                return response.json();
+            })
+            .then(data => {
+                if (data) {
+                    document.getElementById('firstName').value = data.firstName || '';
+                    document.getElementById('lastName').value = data.lastName || '';
+                    document.getElementById('secondName').value = data.secondName || '';
+                    document.getElementById('addCountry').value = data.addCountry || '';
+                    document.getElementById('addrIndex').value = data.addrIndex || '';
+                    document.getElementById('addrCity').value = data.addrCity || '';
+                    document.getElementById('addrStreet').value = data.addrStreet || '';
+                    document.getElementById('addrStructure').value = data.addrStructure || '';
+                    document.getElementById('addrApart').value = data.addrApart || '';
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Не удалось загрузить личные данные');
+            });
+        }
+
+        // Функция сохранения личных данных
+        function savePersonalData(event) {
+            event.preventDefault();
+            const userId = getCookie('userId');
+            if (!userId) {
+                alert('Ошибка: пользователь не идентифицирован');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const personalData = {
+                idUser: userId,
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                secondName: document.getElementById('secondName').value,
+                addCountry: document.getElementById('addCountry').value,
+                addrIndex: document.getElementById('addrIndex').value,
+                addrCity: document.getElementById('addrCity').value,
+                addrStreet: document.getElementById('addrStreet').value,
+                addrStructure: document.getElementById('addrStructure').value,
+                addrApart: document.getElementById('addrApart').value
+            };
+
+            fetch('https://serverbook-1-dhna.onrender.com/api/changeUser', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(personalData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Данные успешно сохранены');
+                } else {
+                    alert('Ошибка сохранения данных');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при сохранении данных');
+            });
+        }
 
         // Функция переключения разделов
         function showSection(sectionId) {
@@ -201,11 +308,6 @@
             const activeSection = document.getElementById(sectionId);
             activeSection.classList.add('active');
             activeSection.style.display = 'block';
-        }
-
-        // Функция выхода из системы
-        function logout() {
-            window.location.href = 'login.html';
         }
 
         // Инициализация: показ первого раздела

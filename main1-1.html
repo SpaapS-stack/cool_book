@@ -16,18 +16,7 @@
             <img src="logo.png" class="logo" alt="BookSwap Logo" onerror="this.src='placeholder-logo.png'">
             <h1>BookSwap</h1>
         </div>
-        <div id="authContainer">
-            <form class="auth-form">
-                <div class="auth-fields">
-                    <input type="text" placeholder="Логин" name="login">
-                    <input type="password" placeholder="Пароль" name="password">
-                    <button type="submit"><a href="login.html">Войти</a></button>
-                </div>
-                <div class="register-link">
-                    <a href="register.html">Нет аккаунта? Зарегистрируйтесь!</a>
-                </div>
-            </form>
-        </div>
+        <div id="authContainer"></div> <!-- Динамический контейнер для авторизации -->
     </header>
 
     <nav class="nav">
@@ -62,58 +51,80 @@
     </footer>
 
     <script>
-        // Код авторизации и работы с куками остается без изменений
-        const cookies = document.cookie.split('; ');
-        const myDataCookie = cookies.find(row => row.startsWith('myData='));
-        const _id = myDataCookie ? myDataCookie.split('=')[1] : null;
-        console.log(_id);
+        // Функция для установки cookie
+        function setCookie(name, value, days) {
+            let expires = '';
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = `; expires=${date.toUTCString()}`;
+            }
+            document.cookie = `${name}=${value || ''}${expires}; path=/`;
+        }
 
+        // Функция для получения cookie (предполагается, что определена в cookie.js)
+        // Если cookie.js отсутствует, добавьте эту функцию:
+        /*
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null;
+        }
+        */
+
+        // Обновление интерфейса авторизации
         function updateAuthDisplay() {
-            let karp = localStorage.getItem("userId");
-            const username = getCookie(`myUsername`);
             const authContainer = document.getElementById('authContainer');
-            if (_id) {
+            const username = getCookie('username');
+            if (username) {
                 authContainer.innerHTML = `
-                    <p>Добро пожаловать, ${username}!</p>
-                    <a href="#" onclick="logout()">Выйти</a>
+                    <div class="auth-fields">
+                        <p>Добро пожаловать, ${username}!</p>
+                        <button type="button" class="logout-btn" onclick="logout()">Выйти</button>
+                    </div>
                 `;
             } else {
                 authContainer.innerHTML = `
-                    <form id="authForm" class="auth-form">
+                    <form class="auth-form">
                         <div class="auth-fields">
-                            <input type="text" placeholder="Логин" name="login">
-                            <input type="password" placeholder="Пароль" name="password">
-                            <button type="submit" onclick="handleLogin(event)">Войти</button>
+                            <input type="text" placeholder="Логин" name="login" id="loginInput">
+                            <input type="password" placeholder="Пароль" name="password" id="passwordInput">
+                            <button type="button" id="loginButton">Войти</button>
                         </div>
                         <div class="register-link">
                             <a href="register.html">Нет аккаунта? Зарегистрируйтесь!</a>
                         </div>
                     </form>
                 `;
+                document.getElementById('loginButton').addEventListener('click', login);
             }
         }
 
-        function handleLogin(event) {
-            event.preventDefault();
-            const login = document.querySelector('input[name="login"]').value;
-            const password = document.querySelector('input[name="password"]').value;
+        // Функция входа
+        function login() {
+            const loginInput = document.getElementById('loginInput').value;
+            const passwordInput = document.getElementById('passwordInput').value;
+
+            if (!loginInput || !passwordInput) {
+                alert('Пожалуйста, введите логин и пароль.');
+                return;
+            }
 
             const params = new URLSearchParams({
-                userName: login,
-                password: password
+                userName: loginInput,
+                password: passwordInput
             });
 
             fetch(`https://serverbook-1-dhna.onrender.com/api/login?${params.toString()}`)
                 .then(response => {
                     if (!response.ok) {
-                        alert("Ошибка входа");
-                        throw new Error('Network response was not ok');
+                        throw new Error('Неверный логин или пароль');
                     }
                     return response.json();
                 })
                 .then(data => {
-                    localStorage.setItem('userId', data.userId);
-                    localStorage.setItem('username', data.username);
+                    setCookie('username', data.userName, 7); // Сохраняем имя пользователя в cookie на 7 дней
                     updateAuthDisplay();
                     alert('Вы успешно вошли в систему!');
                 })
@@ -123,11 +134,14 @@
                 });
         }
 
+        // Функция выхода
         function logout() {
+            setCookie('username', '', -1); // Удаляем cookie
             updateAuthDisplay();
         }
 
+        // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', updateAuthDisplay);
     </script>
-    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'91bd3e9a6d92b039',t:'MTc0MTIxNTc4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

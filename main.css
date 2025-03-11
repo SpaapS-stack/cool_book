@@ -301,3 +301,18 @@ a:active {
     text-align: center;
     margin-bottom: 20px;
 }
+.logout-btn {
+    padding: 8px 20px;
+    background: #4CAF50;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    transition: background 0.3s ease;
+}
+
+.logout-btn:hover {
+    background: #45a049;
+}

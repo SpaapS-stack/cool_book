@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="login.css">
 </head>
-
 <body>
     <div class="auth-container">
         <h1 class="auth-title">BookSwap</h1>
@@ -39,6 +37,17 @@
     </div>
 
     <script>
+        // Функция для установки cookie
+        function setCookie(name, value, days) {
+            let expires = '';
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = `; expires=${date.toUTCString()}`;
+            }
+            document.cookie = `${name}=${value || ''}${expires}; path=/`;
+        }
+
         // Функционал восстановления пароля
         document.getElementById('forgotPasswordLink').addEventListener('click', function(e) {
             e.preventDefault();
@@ -65,42 +74,33 @@
             .catch(error => console.error('Ошибка:', error));
         });
 
-        // Исходный скрипт входа (без изменений)
+        // Обработка входа
         document.getElementById('loginForm').addEventListener('submit', function(event) {
             event.preventDefault();
-            const name = document.getElementById('userName').value;
+            const userName = document.getElementById('userName').value;
             const password = document.getElementById('password').value;
 
             const params = new URLSearchParams({
-                userName: name,
+                userName: userName,
                 password: password
             });
+
             fetch(`https://serverbook-1-dhna.onrender.com/api/login?${params.toString()}`)
                 .then(response => {
                     if (!response.ok) {
-                        alert("Ошибка входа");
+                        alert("Неверный логин или пароль");
                         throw new Error('Network response was not ok');
                     }
                     return response.json();
                 })
-                .then((data) => {console.log(data._id)
-                    document.cookie = `myData=${data._id}`;
-                    document.cookie = `myUsername=${data.userName}`;
-                    const referrer = document.referrer || 'main1-1.html';
-                    window.location.assign(referrer);
-                    // localStorage.setItem('userId', data._id);
-                    // localStorage.setItem('username', data.username);
-                    // const referrer = document.referrer || 'main1-1.html';
-                    // window.location.assign(referrer);
+                .then(data => {
+                    setCookie('username', data.userName, 7); // Сохраняем имя пользователя
+                    setCookie('userId', data._id, 7); // Сохраняем ID пользователя
+                    window.location.href = 'main1-1.html'; // Перенаправляем на главную страницу
                 })
-                // .then(data => {
-                //     alert(data);
-                //     localStorage.setItem('userId', data._Id);
-                //     localStorage.setItem('username', data.username);
-
-                // })
                 .catch(error => {
                     console.error('Ошибка:', error);
+                    alert('Ошибка авторизации: ' + error.message);
                 });
         });
     </script>

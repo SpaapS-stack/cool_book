@@ -15,16 +15,7 @@
             <img src="logo.png" class="logo" alt="BookSwap Logo" onerror="this.src='placeholder-logo.png'">
             <h1>BookSwap</h1>
         </div>
-        <form class="auth-form">
-            <div class="auth-fields">
-                <input type="text" placeholder="Логин" name="login" id="loginInput">
-                <input type="password" placeholder="Пароль" name="password" id="passwordInput">
-                <button type="button" id="loginButton">Войти</button> 
-            </div>
-            <div class="register-link">
-                <a href="register.html">Нет аккаунта? Зарегистрируйтесь!</a>
-            </div>
-        </form>
+        <div id="authContainer"></div> <!-- Динамический контейнер для авторизации -->
     </header>
 
     <nav class="nav">
@@ -47,7 +38,7 @@
                                 <div class="name">Молчанов Никита</div>
                             </td>
                             <td data-label="Описание" class="role">
-                                <div class="role-position">Тех.Лид. и Frontend. </div>
+                                <div class="role-position">TechLead и Frontend</div>
                                 <div class="role-description">Верстка. Логика оформления заказа и авторизации.</div>
                             </td>
                         </tr>
@@ -123,94 +114,97 @@
         © BookSwap 2023.
     </footer>
     <script>
-        
-function updateHeader() {
-            const authForm = document.querySelector('.auth-form');
-            authForm.innerHTML = ''; // Очищаем текущее содержимое
-        
-            const username = getCookie('myUsername');
-            console.log('Cookie username:', username); // Отладка
+            // Функция для установки cookie
+            function setCookie(name, value, days) {
+            let expires = '';
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = `; expires=${date.toUTCString()}`;
+            }
+            document.cookie = `${name}=${value || ''}${expires}; path=/`;
+        }
+
+        // Функция для получения cookie (предполагается, что определена в cookie.js)
+        // Если cookie.js отсутствует, добавьте эту функцию:
+        /*
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null;
+        }
+        */
+
+        // Обновление интерфейса авторизации
+        function updateAuthDisplay() {
+            const authContainer = document.getElementById('authContainer');
+            const username = getCookie('username');
             if (username) {
-                const authFields = document.createElement('div');
-                authFields.className = 'auth-fields';
-        
-                const welcomeMsg = document.createElement('p');
-                welcomeMsg.textContent = `Добро пожаловать, ${username}!`;
-        
-                const logoutBtn = document.createElement('button');
-                logoutBtn.type = 'button';
-                logoutBtn.textContent = 'Выйти';
-                logoutBtn.addEventListener('click', logout);
-        
-                authFields.appendChild(welcomeMsg);
-                authFields.appendChild(logoutBtn);
-                authForm.appendChild(authFields);
+                authContainer.innerHTML = `
+                    <div class="auth-fields">
+                        <p>Добро пожаловать, ${username}!</p>
+                        <button type="button" class="logout-btn" onclick="logout()">Выйти</button>
+                    </div>
+                `;
             } else {
-                const authFields = document.createElement('div');
-                authFields.className = 'auth-fields';
-        
-                const loginInput = document.createElement('input');
-                loginInput.type = 'text';
-                loginInput.placeholder = 'Логин';
-                loginInput.name = 'login';
-                loginInput.id = 'loginInput';
-        
-                const passwordInput = document.createElement('input');
-                passwordInput.type = 'password';
-                passwordInput.placeholder = 'Пароль';
-                passwordInput.name = 'password';
-                passwordInput.id = 'passwordInput';
-        
-                const loginBtn = document.createElement('button');
-                loginBtn.type = 'button';
-                loginBtn.textContent = 'Войти';
-                loginBtn.addEventListener('click', login);
-        
-                const registerLinkDiv = document.createElement('div');
-                registerLinkDiv.className = 'register-link';
-                const registerLink = document.createElement('a');
-                registerLink.href = 'register.html';
-                registerLink.textContent = 'Нет аккаунта? Зарегистрируйтесь!';
-                registerLinkDiv.appendChild(registerLink);
-        
-                authFields.append(loginInput, passwordInput, loginBtn);
-                authForm.append(authFields, registerLinkDiv);
+                authContainer.innerHTML = `
+                    <form class="auth-form">
+                        <div class="auth-fields">
+                            <input type="text" placeholder="Логин" name="login" id="loginInput">
+                            <input type="password" placeholder="Пароль" name="password" id="passwordInput">
+                            <button type="button" id="loginButton">Войти</button>
+                        </div>
+                        <div class="register-link">
+                            <a href="register.html">Нет аккаунта? Зарегистрируйтесь!</a>
+                        </div>
+                    </form>
+                `;
+                document.getElementById('loginButton').addEventListener('click', login);
             }
         }
+
+        // Функция входа
         function login() {
             const loginInput = document.getElementById('loginInput').value;
             const passwordInput = document.getElementById('passwordInput').value;
-        
+
+            if (!loginInput || !passwordInput) {
+                alert('Пожалуйста, введите логин и пароль.');
+                return;
+            }
+
             const params = new URLSearchParams({
                 userName: loginInput,
                 password: passwordInput
             });
+
             fetch(`https://serverbook-1-dhna.onrender.com/api/login?${params.toString()}`)
                 .then(response => {
                     if (!response.ok) {
-                        alert("Ошибка входа");
-                        throw new Error('Network response was not ok');
+                        throw new Error('Неверный логин или пароль');
                     }
                     return response.json();
                 })
-                .then((data) => {console.log(data._id)
-                    document.cookie = `myData=${data._id}`;
-                    document.cookie = `myUsername=${data.userName}`;
-                    const referrer = document.referrer;
-                    window.location.assign(referrer);
-
+                .then(data => {
+                    setCookie('username', data.userName, 7); // Сохраняем имя пользователя в cookie на 7 дней
+                    updateAuthDisplay();
+                    alert('Вы успешно вошли в систему!');
                 })
-
                 .catch(error => {
                     console.error('Ошибка:', error);
+                    alert('Ошибка авторизации: ' + error.message);
                 });
+        }
 
-        }
+        // Функция выхода
         function logout() {
-            document.cookie = 'username=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-            updateHeader();
+            setCookie('username', '', -1); // Удаляем cookie
+            updateAuthDisplay();
         }
-        document.addEventListener('DOMContentLoaded', updateHeader);
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', updateAuthDisplay);
     </script>
 </body>
 </html>
