@@ -8,14 +8,32 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="trade.css">
     <script src="cookie.js"></script>
+    <style>
+        .logout-btn {
+            padding: 8px 20px;
+            background: #4CAF50;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            transition: background 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .logout-btn:hover {
+            background: #45a049;
+        }
+    </style>
 </head>
 <body>
     <header class="header">
         <div class="logo-container">
-            <img src="logo.png" class="logo" alt="BookSwap Logo" onerror="this.src='placeholder-logo.png'">
+            <img src="images/logo.png" class="logo" alt="BookSwap Logo" onerror="this.src='placeholder-logo.png'">
             <h1>BookSwap</h1>
         </div>
-        <div id="authContainer"></div> <!-- Динамический контейнер для авторизации -->
+        <div id="authContainer"></div>
     </header>
 
     <nav class="nav">
@@ -54,7 +72,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="required">Название книги</label>
-                                    <input type="text" name="book_title" data-hint="Только кириллица/латиница, цифры, кавычки, тире, знаки препинания; до 50 символов" onfocus="showHint(this)" onblur="hideHint()" pattern="[A-Za-zА-Яа-яёЁ0-9«»\"'\-.,!? ]{1,50}" required>
+                                    <input type="text" name="book_title" data-hint="Только кириллица/латиница, цифры, кавычки, тире, знаки препинания; до 50 символов" onfocus="showHint(this)" onblur="hideHint()" required>
                                 </div>
                                 <div class="form-group">
                                     <label>ISBN</label>
@@ -72,18 +90,18 @@
                                     <li class="category-item parent">
                                         Жанр
                                         <ul>
-                                            <li class="category-item"><label><input type="checkbox" name="genre_step1"> Детективы</label></li>
-                                            <li class="category-item"><label><input type="checkbox" name="genre_step1"> Фантастика</label></li>
-                                            <li class="category-item"><label><input type="checkbox" name="genre_step1"> Фэнтези</label></li>
-                                            <li class="category-item"><label><input type="checkbox" name="genre_step1"> Романтика</label></li>
-                                            <li class="category-item"><label><input type="checkbox" name="genre_step1"> Историческая литература</label></li>
+                                            <li class="category-item"><label><input type="checkbox" name="category" class="category-checkbox"> Детективы</label></li>
+                                            <li class="category-item"><label><input type="checkbox" name="category" class="category-checkbox"> Фантастика</label></li>
+                                            <li class="category-item"><label><input type="checkbox" name="category" class="category-checkbox"> Фэнтези</label></li>
+                                            <li class="category-item"><label><input type="checkbox" name="category" class="category-checkbox"> Романтика</label></li>
+                                            <li class="category-item"><label><input type="checkbox" name="category" class="category-checkbox"> Историческая литература</label></li>
                                         </ul>
                                     </li>
                                     <li class="category-item parent">
                                         Состояние
                                         <ul>
-                                            <li class="category-item"><label><input type="radio" name="condition_step1"> Новое</label></li>
-                                            <li class="category-item"><label><input type="radio" name="condition_step1"> Б/у</label></li>
+                                            <li class="category-item"><label><input type="radio" name="status" value="Новое" class="status-radio"> Новое</label></li>
+                                            <li class="category-item"><label><input type="radio" name="status" value="Б/у" class="status-radio"> Б/у</label></li>
                                         </ul>
                                     </li>
                                 </ul>
@@ -100,9 +118,7 @@
                 <!-- Шаг 2: Хочу получить -->
                 <div class="form-step" id="step2">
                     <div class="form-grid">
-                        <div class="form-column">
-                            <!-- Пустая колонка для сохранения структуры -->
-                        </div>
+                        <div class="form-column"></div>
                         <div class="form-column">
                             <h2>Категории для "Хочу получить"</h2>
                             <div class="clear-selection" onclick="clearSelections('step2')">снять выделения</div>
@@ -110,18 +126,18 @@
                                 <li class="category-item parent">
                                     Жанр
                                     <ul>
-                                        <li class="category-item"><label><input type="checkbox" class="genre_checkbox" name="genre_step2"> Детективы</label></li>
-                                        <li class="category-item"><label><input type="checkbox" class="genre_checkbox" name="genre_step2"> Фантастика</label></li>
-                                        <li class="category-item"><label><input type="checkbox" class="genre_checkbox" name="genre_step2"> Фэнтези</label></li>
-                                        <li class="category-item"><label><input type="checkbox" class="genre_checkbox" name="genre_step2"> Романтика</label></li>
-                                        <li class="category-item"><label><input type="checkbox" class="genre_checkbox" name="genre_step2"> Историческая литература</label></li>
+                                        <li class="category-item"><label><input type="checkbox" name="wishCategory" class="wish-category-checkbox"> Детективы</label></li>
+                                        <li class="category-item"><label><input type="checkbox" name="wishCategory" class="wish-category-checkbox"> Фантастика</label></li>
+                                        <li class="category-item"><label><input type="checkbox" name="wishCategory" class="wish-category-checkbox"> Фэнтези</label></li>
+                                        <li class="category-item"><label><input type="checkbox" name="wishCategory" class="wish-category-checkbox"> Романтика</label></li>
+                                        <li class="category-item"><label><input type="checkbox" name="wishCategory" class="wish-category-checkbox"> Историческая литература</label></li>
                                     </ul>
                                 </li>
                                 <li class="category-item parent">
                                     Состояние
                                     <ul>
-                                        <li class="category-item"><label><input type="radio" name="condition_step2"> Новое</label></li>
-                                        <li class="category-item"><label><input type="radio" name="condition_step2"> Б/у</label></li>
+                                        <li class="category-item"><label><input type="radio" name="wishStatus" value="Новое" class="wish-status-radio"> Новое</label></li>
+                                        <li class="category-item"><label><input type="radio" name="wishStatus" value="Б/у" class="wish-status-radio"> Б/у</label></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -129,7 +145,7 @@
                         <div class="form-column">
                             <div class="next-btn-container">
                                 <button type="button" class="prev-btn" onclick="goToStep(1)">Назад</button>
-                                <button type="button" class="next-btn" id="nextBtnStep2" disabled onclick="goToStep3()">Далее ▶</button>
+                                <button type="button" class="next-btn" id="nextBtnStep2" onclick="goToStep3()">Далее ▶</button>
                             </div>
                         </div>
                     </div>
@@ -142,40 +158,38 @@
                             <h2>Адрес доставки</h2>
                             <div class="form-group">
                                 <label class="required">Фамилия</label>
-                                <input type="text" name="delivery_surname" required>
+                                <input type="text" name="delivery_surname" id="delivery_surname" required>
                             </div>
                             <div class="form-group">
                                 <label class="required">Имя</label>
-                                <input type="text" name="delivery_name" required>
+                                <input type="text" name="delivery_name" id="delivery_name" required>
                             </div>
                             <div class="form-group">
                                 <label>Отчество (при наличии)</label>
-                                <input type="text" name="delivery_patronymic">
+                                <input type="text" name="delivery_patronymic" id="delivery_patronymic">
                             </div>
                             <div class="form-group">
                                 <label class="required">Город</label>
-                                <input type="text" name="delivery_city" required>
+                                <input type="text" name="delivery_city" id="delivery_city" required>
                             </div>
                             <div class="form-group">
                                 <label class="required">Улица</label>
-                                <input type="text" name="delivery_street" required>
+                                <input type="text" name="delivery_street" id="delivery_street" required>
                             </div>
                             <div class="form-group">
                                 <label class="required">Дом</label>
-                                <input type="text" name="delivery_house" required>
+                                <input type="text" name="delivery_house" id="delivery_house" required>
                             </div>
                             <div class="form-group">
                                 <label>Квартира</label>
-                                <input type="text" name="delivery_apartment">
+                                <input type="text" name="delivery_apartment" id="delivery_apartment">
                             </div>
                             <div class="form-group">
                                 <label class="required">Индекс</label>
-                                <input type="text" name="delivery_postcode" pattern="\d{6}" required>
+                                <input type="text" name="delivery_postcode" id="delivery_postcode" pattern="\d{6}" required>
                             </div>
                         </div>
-                        <div class="form-column">
-                            <!-- Пустая колонка для сохранения структуры -->
-                        </div>
+                        <div class="form-column"></div>
                         <div class="form-column">
                             <div class="next-btn-container">
                                 <button type="button" class="prev-btn" onclick="goToStep(2)">Назад</button>
@@ -204,6 +218,13 @@
                 expires = `; expires=${date.toUTCString()}`;
             }
             document.cookie = `${name}=${value || ''}${expires}; path=/`;
+        }
+
+        // Функция для получения cookie
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
         }
 
         // Обновление интерфейса авторизации
@@ -251,13 +272,12 @@
 
             fetch(`https://serverbook-1-dhna.onrender.com/api/login?${params.toString()}`)
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Неверный логин или пароль');
-                    }
+                    if (!response.ok) throw new Error('Неверный логин или пароль');
                     return response.json();
                 })
                 .then(data => {
-                    setCookie('username', data.userName, 7); // Сохраняем имя пользователя в cookie на 7 дней
+                    setCookie('username', data.userName, 7);
+                    setCookie('userId', data._id, 7);
                     updateAuthDisplay();
                     alert('Вы успешно вошли в систему!');
                 })
@@ -269,14 +289,15 @@
 
         // Функция выхода
         function logout() {
-            setCookie('username', '', -1); // Удаляем cookie
+            setCookie('username', '', -1);
+            setCookie('userId', '', -1);
             updateAuthDisplay();
         }
 
-        // Инициализация при загрузке страницы
+        // Инициализация
         document.addEventListener('DOMContentLoaded', updateAuthDisplay);
 
-        // Код для управления шагами формы
+        // Управление шагами формы
         let currentStep = 1;
         let formData = {};
 
@@ -291,17 +312,26 @@
                         formData[key] = input.value;
                     }
                 });
+                formData.step1_category = Array.from(document.querySelectorAll('#step1 input[name="category"]:checked'))
+                    .map(cb => cb.parentElement.textContent.trim());
+                const status = document.querySelector('#step1 input[name="status"]:checked');
+                formData.step1_status = status ? status.value : '';
             } else if (step === 2) {
                 const inputs = document.querySelectorAll('#step2 input');
                 inputs.forEach(input => {
                     const key = `step2_${input.name}`;
-                    formData[key] = input.checked;
+                    if (input.type === 'checkbox' || input.type === 'radio') {
+                        formData[key] = input.checked;
+                    }
                 });
+                formData.step2_wishCategory = Array.from(document.querySelectorAll('#step2 input[name="wishCategory"]:checked'))
+                    .map(cb => cb.parentElement.textContent.trim());
+                const wishStatus = document.querySelector('#step2 input[name="wishStatus"]:checked');
+                formData.step2_wishStatus = wishStatus ? wishStatus.value : '';
             } else if (step === 3) {
                 const inputs = document.querySelectorAll('#step3 input');
                 inputs.forEach(input => {
-                    const key = `step3_${input.name}`;
-                    formData[key] = input.value;
+                    formData[`step3_${input.name}`] = input.value;
                 });
             }
         }
@@ -319,6 +349,16 @@
                         }
                     }
                 });
+                if (formData.step1_category) {
+                    document.querySelectorAll('#step1 input[name="category"]').forEach(cb => {
+                        cb.checked = formData.step1_category.includes(cb.parentElement.textContent.trim());
+                    });
+                }
+                if (formData.step1_status) {
+                    document.querySelectorAll('#step1 input[name="status"]').forEach(radio => {
+                        radio.checked = radio.value === formData.step1_status;
+                    });
+                }
             } else if (step === 2) {
                 const inputs = document.querySelectorAll('#step2 input');
                 inputs.forEach(input => {
@@ -327,6 +367,16 @@
                         input.checked = formData[key];
                     }
                 });
+                if (formData.step2_wishCategory) {
+                    document.querySelectorAll('#step2 input[name="wishCategory"]').forEach(cb => {
+                        cb.checked = formData.step2_wishCategory.includes(cb.parentElement.textContent.trim());
+                    });
+                }
+                if (formData.step2_wishStatus) {
+                    document.querySelectorAll('#step2 input[name="wishStatus"]').forEach(radio => {
+                        radio.checked = radio.value === formData.step2_wishStatus;
+                    });
+                }
             } else if (step === 3) {
                 const inputs = document.querySelectorAll('#step3 input');
                 inputs.forEach(input => {
@@ -339,13 +389,14 @@
         }
 
         function goToStep(step) {
-            preserveInputValues(currentStep);
-            document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
-            document.getElementById(`step${step}`).classList.add('active');
-            currentStep = step;
-            restoreInputValues(step);
-            updateFormSections();
-        }
+        preserveInputValues(currentStep);
+        document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
+        document.getElementById(`step${step}`).classList.add('active');
+        currentStep = step;
+        restoreInputValues(step);
+        updateFormSections();
+        updateNextButton(); // Добавлено для обновления кнопки при переходе
+    }
 
         function updateFormSections() {
             document.querySelectorAll('.form-section').forEach((el, index) => {
@@ -355,14 +406,20 @@
                     el.classList.add('active');
                     el.classList.remove('inactive');
                 } else {
-                    el.classList.remove('active');
                     el.classList.add('inactive');
+                    el.classList.remove('active');
                 }
             });
         }
 
         function goToStep2() {
             if (document.getElementById('step1Form').checkValidity()) {
+                const categories = document.querySelectorAll('#step1 input[name="category"]:checked');
+                const status = document.querySelector('#step1 input[name="status"]:checked');
+                if (categories.length === 0 || !status) {
+                    alert('Пожалуйста, выберите хотя бы один жанр и состояние книги.');
+                    return;
+                }
                 goToStep(2);
             } else {
                 document.getElementById('step1Form').reportValidity();
@@ -370,58 +427,139 @@
         }
 
         function goToStep3() {
-            const checkedGenres = document.querySelectorAll('#step2 .genre_checkbox:checked').length;
-            if (checkedGenres > 0) {
-                goToStep(3);
-            } else {
-                alert('Пожалуйста, выберите хотя бы один жанр.');
+            const wishCategories = document.querySelectorAll('#step2 input[name="wishCategory"]:checked');
+            const wishStatus = document.querySelector('#step2 input[name="wishStatus"]:checked');
+            if (wishCategories.length === 0 || !wishStatus) {
+                alert('Пожалуйста, выберите хотя бы один желаемый жанр и состояние книги.');
+                return;
             }
+            goToStep(3);
         }
 
-        async function submitForm() {
-            const username = getCookie('username');
-            if (!username) {
-                alert('Пожалуйста, войдите в систему.');
-                return;
-            }
+        function updateNextButton() {
+        if (currentStep === 2) {
+            const wishCategories = document.querySelectorAll('#step2 input[name="wishCategory"]:checked');
+            const wishStatus = document.querySelector('#step2 input[name="wishStatus"]:checked');
+            document.getElementById('nextBtnStep2').disabled = !(wishCategories.length > 0 && wishStatus);
+        }
+    }
 
-            preserveInputValues(3);
+    async function submitForm() {
+    const username = getCookie('username');
+    const userId = getCookie('userId');
+    if (!username || !userId) {
+        alert('Пожалуйста, войдите в систему, чтобы оформить заявку на обмен.');
+        return;
+    }
 
-            const step3Inputs = document.querySelectorAll('#step3 input[required]');
-            let valid = true;
-            step3Inputs.forEach(input => {
-                if (!input.checkValidity()) valid = false;
-            });
-            if (!valid) {
-                step3Inputs.forEach(input => input.reportValidity());
-                return;
-            }
+    preserveInputValues(3);
+    const step3Inputs = document.querySelectorAll('#step3 input[required]');
+    let valid = true;
+    step3Inputs.forEach(input => {
+        if (!input.checkValidity()) valid = false;
+    });
+    if (!valid) {
+        step3Inputs.forEach(input => input.reportValidity());
+        return;
+    }
 
-            const exchangeData = {
-                author_surname: formData.step1_author_surname,
-                author_name: formData.step1_author_name,
-                book_title: formData.step1_book_title,
-                isbn: formData.step1_isbn,
-                year: formData.step1_year,
-                genre: Array.from(document.querySelectorAll('#step2 input[name="genre_step2"]:checked'))
-                    .map(cb => cb.parentElement.textContent.trim()),
-                condition: document.querySelector('#step1 input[name="condition_step1"]:checked')
-                    ?.parentElement.textContent.trim() || ''
-            };
+    const exchangeData = {
+        author_surname: formData.step1_author_surname,
+        author_name: formData.step1_author_name,
+        book_title: formData.step1_book_title,
+        isbn: formData.step1_isbn,
+        year: formData.step1_year,
+        category: formData.step1_category,
+        status: formData.step1_status,
+        userId: userId,
+        wishCategory: formData.step2_wishCategory,
+        wishStatus: formData.step2_wishStatus,
+        addCountry: '',
+        addrIndex: formData.step3_delivery_postcode,
+        addrCity: formData.step3_delivery_city,
+        addrStreet: formData.step3_delivery_street,
+        addrStructure: formData.step3_delivery_house,
+        addrApart: formData.step3_delivery_apartment,
+        isDefault: false
+    };
+
+    try {
+        const response = await fetch('https://serverbook-1-dhna.onrender.com/api/exchangeBook', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(exchangeData)
+        });
+        if (!response.ok) throw new Error('Ошибка отправки');
+        alert('Заявка на обмен успешно оформлена!');
+        formData = {};
+        goToStep(1);
+    } catch (error) {
+        console.error('Ошибка:', error);
+        alert('Произошла ошибка при отправке данных.');
+    }
+}
+
+        async function loadDeliveryAddress() {
+            const userId = getCookie('userId');
+            if (!userId) return;
 
             try {
-                const response = await fetch('https://serverbook-1-dhna.onrender.com/api/exchangeBook', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(exchangeData)
+                const response = await fetch(`https://serverbook-1-dhna.onrender.com/api/getUserData?userId=${userId}`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
                 });
-                if (!response.ok) throw new Error('Ошибка отправки');
-                alert('Данные успешно отправлены!');
+                if (!response.ok) throw new Error('Ошибка загрузки данных');
+                const data = await response.json();
+                if (data) {
+                    document.getElementById('delivery_surname').value = data.lastName || '';
+                    document.getElementById('delivery_name').value = data.firstName || '';
+                    document.getElementById('delivery_patronymic').value = data.secondName || '';
+                    document.getElementById('delivery_city').value = data.addrCity || '';
+                    document.getElementById('delivery_street').value = data.addrStreet || '';
+                    document.getElementById('delivery_house').value = data.addrStructure || '';
+                    document.getElementById('delivery_apartment').value = data.addrApart || '';
+                    document.getElementById('delivery_postcode').value = data.addrIndex || '';
+                }
             } catch (error) {
                 console.error('Ошибка:', error);
-                alert('Произошла ошибка при отправке данных.');
             }
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAuthDisplay();
+            loadDeliveryAddress();
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('#step2 input[type="checkbox"], #step2 input[type="radio"]').forEach(input => {
+            input.addEventListener('change', updateNextButton);
+        });
+    });
+
+        function clearSelections(step) {
+            if (step === 'step1') {
+                document.querySelectorAll('#step1 input[type="checkbox"]').forEach(cb => cb.checked = false);
+                document.querySelectorAll('#step1 input[type="radio"]').forEach(radio => radio.checked = false);
+            } else if (step === 'step2') {
+                document.querySelectorAll('#step2 input[type="checkbox"]').forEach(cb => cb.checked = false);
+                document.querySelectorAll('#step2 input[type="radio"]').forEach(radio => radio.checked = false);
+            }
+        }
+
+        function showHint(input) {
+        const hint = input.getAttribute('data-hint');
+        if (hint) {
+            const hintContainer = document.getElementById('hintContainer');
+            hintContainer.textContent = hint;
+            hintContainer.style.display = 'block';
+            const rect = input.getBoundingClientRect();
+            hintContainer.style.left = (rect.left + window.scrollX) + 'px';
+            hintContainer.style.top = (rect.bottom + window.scrollY + 5) + 'px';
+        }
+    }
+
+    function hideHint() {
+        document.getElementById('hintContainer').style.display = 'none';
+    }
     </script>
 </body>
 </html>
