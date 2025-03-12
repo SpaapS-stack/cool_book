@@ -100,8 +100,8 @@
                                     <li class="category-item parent">
                                         Состояние
                                         <ul>
-                                            <li class="category-item"><label><input type="radio" name="status" value="Новое" class="status-radio"> Новое</label></li>
-                                            <li class="category-item"><label><input type="radio" name="status" value="Б/у" class="status-radio"> Б/у</label></li>
+                                            <li class="category-item"><label><input type="radio" name="status" value="new" class="status-radio"> Новое</label></li>
+                                            <li class="category-item"><label><input type="radio" name="status" value="old" class="status-radio"> Б/у</label></li>
                                         </ul>
                                     </li>
                                 </ul>
@@ -136,8 +136,8 @@
                                 <li class="category-item parent">
                                     Состояние
                                     <ul>
-                                        <li class="category-item"><label><input type="radio" name="wishStatus" value="Новое" class="wish-status-radio"> Новое</label></li>
-                                        <li class="category-item"><label><input type="radio" name="wishStatus" value="Б/у" class="wish-status-radio"> Б/у</label></li>
+                                        <li class="category-item"><label><input type="radio" name="wishStatus" value="new" class="wish-status-radio"> Новое</label></li>
+                                        <li class="category-item"><label><input type="radio" name="wishStatus" value="old" class="wish-status-radio"> Б/у</label></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -482,29 +482,31 @@
         addrApart: formData.step3_delivery_apartment,
         isDefault: false
     };
-
+    console.log('Отправляемые данные:', exchangeData);
     try {
+        alert(exchangeData)
         const response = await fetch('https://serverbook-1-dhna.onrender.com/api/exchangeBook', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(exchangeData)
         });
+        
         if (!response.ok) throw new Error('Ошибка отправки');
         alert('Заявка на обмен успешно оформлена!');
         formData = {};
         goToStep(1);
     } catch (error) {
         console.error('Ошибка:', error);
-        alert('Произошла ошибка при отправке данных.');
+        alert('Произошла ошибка при отправке данных.' + error.message);
     }
 }
 
         async function loadDeliveryAddress() {
-            const userId = getCookie('userId');
+            const userId = getCookie('username');
             if (!userId) return;
 
             try {
-                const response = await fetch(`https://serverbook-1-dhna.onrender.com/api/getUserData?userId=${userId}`, {
+                const response = await fetch(`https://serverbook-1-dhna.onrender.com/api/getUserData?userName=${userId}`, {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' }
                 });
