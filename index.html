@@ -5,37 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BookSwap - Редирект</title>
     <script src="cookie.js"></script>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f0f0f0;
-            color: #333;
-        }
-    </style>
 </head>
 <body>
     <p>Перенаправление...</p>
-    <script>
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-            return null;
-        }
 
-        document.addEventListener('DOMContentLoaded', () => {
+    <script>
+        // Проверка наличия куки username и редирект
+        (function redirect() {
             const username = getCookie('username');
             if (username) {
                 window.location.href = 'main1-1.html';
             } else {
                 window.location.href = 'login.html';
             }
-        });
+        })();
     </script>
 </body>
 </html>
