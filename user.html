@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="user.css">
     <script src="cookie.js"></script>
     <style>
-        /* Стиль для кнопки "Выйти" */
         .logout-btn {
             padding: 8px 20px;
             background: #4CAF50;
@@ -23,16 +22,28 @@
             text-decoration: none;
             display: inline-block;
         }
-
         .logout-btn:hover {
             background: #45a049;
+        }
+        .book-item, .exchange-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .genre-tag {
+            display: inline-block;
+            background: #f0f0f0;
+            padding: 4px 8px;
+            margin: 2px;
+            border-radius: 12px;
         }
     </style>
 </head>
 <body>
     <header class="header">
         <div class="logo-container">
-            <img src="logo.png" class="logo" alt="BookSwap Logo" onerror="this.src='placeholder-logo.png'">
+            <img src="images/logo.png" class="logo" alt="BookSwap Logo" onerror="this.src='placeholder-logo.png'">
             <h1>BookSwap</h1>
         </div>
         <div class="auth-fields">
@@ -57,7 +68,7 @@
                     <li><a href="#proposals" onclick="showSection('proposals')">Предложения для обмена</a></li>
                     <li><a href="#want_exchange" onclick="showSection('want_exchange')">Хочу обменять</a></li>
                     <li><a href="#want_receive" onclick="showSection('want_receive')">Хочу получить</a></li>
-                    <li><a href="#active_exchanges" onclick="showSection('active_exchanges')">Активные обмены</a></li>
+                    <li><a href="#completed_exchanges" onclick="showSection('completed_exchanges')">Совершённые обмены</a></li>
                     <li><a href="#book_reviews" onclick="showSection('book_reviews')">Отзывы на книги</a></li>
                     <li><a href="#personal_data" onclick="showSection('personal_data')">Личные данные</a></li>
                     <li><a href="#archive" onclick="showSection('archive')">Архив</a></li>
@@ -66,7 +77,7 @@
             </aside>
 
             <div class="exchange-content">
-                <!-- Раздел: Личные данные -->
+                <!-- Личные данные -->
                 <section id="personal_data" class="exchange-section">
                     <h2>Личные данные</h2>
                     <form class="personal-data-form" onsubmit="savePersonalData(event)">
@@ -82,94 +93,52 @@
                         <button type="submit" class="save-btn">Сохранить</button>
                     </form>
                 </section>
-                <!-- Остальные разделы остаются без изменений -->
-                <section id="proposals" class="exchange-section active">
+
+                <!-- Предложения для обмена -->
+                <section id="proposals" class="exchange-section">
                     <h2>Предложения для обмена</h2>
-                    <div class="proposal-group">
-                        <h3>Полное совпадение</h3>
-                        <div class="proposal-list">
-                            <div class="proposal-item">
-                                <span>Золотая рыбка, Самара</span>
-                                <span>Веселый перец, Хабаровск</span>
-                                <span class="rating">рейтинг 0</span>
-                            </div>
-                            <div class="proposal-item">
-                                <span>Золотая рыбка, Самара</span>
-                                <span>Веселый перец, Хабаровск</span>
-                                <span class="rating">рейтинг 0</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="proposal-group">
-                        <h3>Частичное совпадение</h3>
-                        <div class="proposal-list">
-                            <div class="proposal-item">
-                                <span>Золотая рыбка, Самара</span>
-                                <span>Веселый перец, Хабаровск</span>
-                                <span class="rating">рейтинг 0</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="proposal-group">
-                        <h3>Другие интересные предложения</h3>
-                        <div class="proposal-list">
-                            <div class="proposal-item">
-                                <span>Золотая рыбка, Самара</span>
-                                <span>Веселый перец, Хабаровск</span>
-                                <span class="rating">рейтинг 0</span>
-                            </div>
-                        </div>
+                    <div class="exchange-list" id="proposals-list">
+                        <!-- Динамически загружаемые предложения -->
                     </div>
                 </section>
 
+                <!-- Хочу обменять -->
                 <section id="want_exchange" class="exchange-section">
                     <h2>Хочу обменять</h2>
-                    <div class="book-list">
-                        <div class="book-item">
-                            <h3>Книга 1</h3>
-                            <p>Автор: Автор 1</p>
-                        </div>
-                        <div class="book-item">
-                            <h3>Книга 2</h3>
-                            <p>Автор: Автор 2</p>
-                        </div>
+                    <div class="book-list" id="want-exchange-list">
+                        <!-- Динамически загружаемые книги -->
                     </div>
                 </section>
 
+                <!-- Хочу получить -->
                 <section id="want_receive" class="exchange-section">
                     <h2>Хочу получить</h2>
-                    <div class="book-list">
-                        <div class="book-item">
-                            <h3>Книга 3</h3>
-                            <p>Автор: Автор 3</p>
-                        </div>
+                    <div class="genre-list" id="wishlist-genres">
+                        <p>Данные о желаемых жанрах пока недоступны</p>
                     </div>
                 </section>
 
-                <section id="active_exchanges" class="exchange-section">
-                    <h2>Активные обмены</h2>
-                    <div class="proposal-list">
-                        <div class="proposal-item">
-                            <span>Книга 1, Самара</span>
-                            <span>Книга 3, Москва</span>
-                            <span class="rating">В процессе</span>
-                        </div>
+                <!-- Совершённые обмены -->
+                <section id="completed_exchanges" class="exchange-section">
+                    <h2>Совершённые обмены</h2>
+                    <div class="completed-list" id="completed-exchanges-list">
+                        <p>Данные о совершённых обменах пока недоступны</p>
                     </div>
                 </section>
 
+                <!-- Отзывы на книги -->
                 <section id="book_reviews" class="exchange-section">
                     <h2>Отзывы на книги</h2>
-                    <form class="review-form">
-                        <select name="book">
-                            <option value="">Выберите книгу</option>
-                            <option value="book1">Книга 1</option>
-                            <option value="book2">Книга 2</option>
+                    <form class="review-form" onsubmit="submitReview(event)">
+                        <select name="book" id="book-select" disabled>
+                            <option value="">Функциональность пока недоступна</option>
                         </select>
-                        <textarea name="review" rows="4" placeholder="Ваш отзыв"></textarea>
-                        <button type="submit">Отправить</button>
+                        <textarea name="review" rows="4" placeholder="Ваш отзыв" disabled></textarea>
+                        <button type="submit" disabled>Отправить</button>
                     </form>
                 </section>
 
+                <!-- Архив -->
                 <section id="archive" class="exchange-section">
                     <h2>Архив</h2>
                     <div class="proposal-list">
@@ -189,55 +158,22 @@
     </footer>
 
     <script>
-        // Функция для установки cookie
-        function setCookie(name, value, days) {
-            let expires = '';
-            if (days) {
-                const date = new Date();
-                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                expires = `; expires=${date.toUTCString()}`;
-            }
-            document.cookie = `${name}=${value || ''}${expires}; path=/`;
-        }
-
-        // Проверка авторизации и загрузка данных
         document.addEventListener('DOMContentLoaded', () => {
             const username = getCookie('username');
             if (!username) {
                 window.location.href = 'login.html';
             } else {
                 document.getElementById('username').textContent = username;
-                loadPersonalData(); // Загружаем данные при открытии страницы
+                loadPersonalData();
+                showSection('proposals');
             }
         });
 
-        // Функция выхода
-        function logout() {
-            setCookie('username', '', -1);
-            setCookie('userId', '', -1); // Удаляем userId при выходе
-            window.location.href = 'login.html';
-        }
-
-        // Функция загрузки личных данных
-        function loadPersonalData() {
-            const userId = getCookie('userId');
-            if (!userId) {
-                alert('Ошибка: пользователь не идентифицирован');
-                window.location.href = 'login.html';
-                return;
-            }
-
-            fetch(`https://serverbook-1-dhna.onrender.com/api/getUserData?userId=${userId}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then(response => {
+        async function loadPersonalData() {
+            try {
+                const response = await fetch(`https://serverbook-1-dhna.onrender.com/api/getUserData?userName=${getCookie('username')}`);
                 if (!response.ok) throw new Error('Ошибка загрузки данных');
-                return response.json();
-            })
-            .then(data => {
+                const data = await response.json();
                 if (data) {
                     document.getElementById('firstName').value = data.firstName || '';
                     document.getElementById('lastName').value = data.lastName || '';
@@ -249,71 +185,97 @@
                     document.getElementById('addrStructure').value = data.addrStructure || '';
                     document.getElementById('addrApart').value = data.addrApart || '';
                 }
-            })
-            .catch(error => {
-                console.error('Ошибка:', error);
-                alert('Не удалось загрузить личные данные');
-            });
-        }
-
-        // Функция сохранения личных данных
-        function savePersonalData(event) {
-            event.preventDefault();
-            const userId = getCookie('userId');
-            if (!userId) {
-                alert('Ошибка: пользователь не идентифицирован');
-                window.location.href = 'login.html';
-                return;
+            } catch (error) {
+                console.error('Ошибка загрузки данных:', error);
             }
+        }
 
-            const personalData = {
-                idUser: userId,
-                firstName: document.getElementById('firstName').value,
-                lastName: document.getElementById('lastName').value,
-                secondName: document.getElementById('secondName').value,
-                addCountry: document.getElementById('addCountry').value,
-                addrIndex: document.getElementById('addrIndex').value,
-                addrCity: document.getElementById('addrCity').value,
-                addrStreet: document.getElementById('addrStreet').value,
-                addrStructure: document.getElementById('addrStructure').value,
-                addrApart: document.getElementById('addrApart').value
-            };
-
-            fetch('https://serverbook-1-dhna.onrender.com/api/changeUser', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(personalData)
-            })
-            .then(response => {
-                if (response.ok) {
-                    alert('Данные успешно сохранены');
-                } else {
-                    alert('Ошибка сохранения данных');
-                }
-            })
-            .catch(error => {
-                console.error('Ошибка:', error);
+        async function savePersonalData(event) {
+            event.preventDefault();
+            try {
+                const response = await fetch('https://serverbook-1-dhna.onrender.com/api/changeUser', {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        idUser: getCookie('userId'),
+                        ...Object.fromEntries(new FormData(event.target))
+                    })
+                });
+                if (response.ok) alert('Данные сохранены');
+                else throw new Error('Ошибка сохранения');
+            } catch (error) {
+                console.error('Ошибка сохранения:', error);
                 alert('Произошла ошибка при сохранении данных');
-            });
+            }
         }
 
-        // Функция переключения разделов
+        async function loadProposals() {
+            try {
+                const response = await fetch(`https://serverbook-1-dhna.onrender.com/api/getOfferBooks?userName=${getCookie('username')}`);
+                if (!response.ok) throw new Error('Ошибка загрузки предложений');
+                const offers = await response.json();
+                const list = document.getElementById('proposals-list');
+                list.innerHTML = offers.map(offer => `
+                    <div class="exchange-item">
+                        <p>Книга: ${offer.bookName || 'Неизвестно'} 
+                        (Автор: ${offer.author || 'Неизвестен'})</p>
+                    </div>
+                `).join('') || '<p>Предложения отсутствуют</p>';
+            } catch (error) {
+                console.error('Ошибка загрузки предложений:', error);
+                document.getElementById('proposals-list').innerHTML = '<p>Ошибка загрузки</p>';
+            }
+        }
+
+        async function loadWantExchange() {
+            try {
+                const response = await fetch(`https://serverbook-1-dhna.onrender.com/api/getOfferBooks?userName=${getCookie('username')}`);
+                if (!response.ok) throw new Error('Ошибка загрузки книг');
+                const books = await response.json();
+                const list = document.getElementById('want-exchange-list');
+                list.innerHTML = books.map(book => `
+                    <div class="book-item">
+                        <h3>${book.bookName || 'Неизвестно'}</h3>
+                        <p>Автор: ${book.author || 'Неизвестен'}</p>
+                    </div>
+                `).join('') || '<p>Книги отсутствуют</p>';
+            } catch (error) {
+                console.error('Ошибка загрузки книг:', error);
+                document.getElementById('want-exchange-list').innerHTML = '<p>Ошибка загрузки</p>';
+            }
+        }
+
+        function loadWishlist() {
+            // Нет доступного маршрута, используем заглушку
+            document.getElementById('wishlist-genres').innerHTML = '<p>Данные о желаемых жанрах пока недоступны</p>';
+        }
+
+        function loadCompletedExchanges() {
+            // Нет доступного маршрута, используем заглушку
+            document.getElementById('completed-exchanges-list').innerHTML = '<p>Данные о совершённых обменах пока недоступны</p>';
+        }
+
+        function submitReview(event) {
+            event.preventDefault();
+            alert('Функциональность отзывов пока не реализована');
+        }
+
         function showSection(sectionId) {
-            document.querySelectorAll('.exchange-section').forEach(section => {
-                section.classList.remove('active');
-                section.style.display = 'none';
-            });
-            const activeSection = document.getElementById(sectionId);
-            activeSection.classList.add('active');
-            activeSection.style.display = 'block';
+            document.querySelectorAll('.exchange-section').forEach(s => s.style.display = 'none');
+            document.getElementById(sectionId).style.display = 'block';
+
+            if (sectionId === 'proposals') loadProposals();
+            if (sectionId === 'want_exchange') loadWantExchange();
+            if (sectionId === 'want_receive') loadWishlist();
+            if (sectionId === 'completed_exchanges') loadCompletedExchanges();
+            // Отзывы не загружаем, так как функциональность отключена
         }
 
-        // Инициализация: показ первого раздела
-        document.addEventListener('DOMContentLoaded', () => {
-            showSection('proposals');
-        });
+        function logout() {
+            document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            document.cookie = 'userId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            window.location.href = 'login.html';
+        }
     </script>
 </body>
 </html>
