@@ -8,24 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="trade.css">
     <script src="cookie.js"></script>
-    <style>
-        .logout-btn {
-            padding: 8px 20px;
-            background: #4CAF50;
-            border: none;
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: 'Roboto', sans-serif;
-            font-size: 14px;
-            transition: background 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .logout-btn:hover {
-            background: #45a049;
-        }
-    </style>
+    <script src="showNotification.js"></script>
 </head>
 <body>
     <header class="header">
@@ -62,9 +45,8 @@
                             <div class="form-column">
                                 <h2>Хочу обменять</h2>
                                 <div class="form-group">
-                                    <label class="required">Фамилия автора</label>
-                                    <input type="text" name="author_surname" data-hint="Только кириллица/латиница, до 50 символов" onfocus="showHint(this)" onblur="hideHint()" required>
-                                    <div class="hint">Пример: Толстой</div>
+                                    <label class="required" for="author_surname">Фамилия автора</label>
+                                    <input type="text" id="author_surname" name="author_surname" data-hint="Только кириллица/латиница, до 50 символов" onfocus="showHint(this)" onblur="hideHint()" required>
                                 </div>
                                 <div class="form-group">
                                     <label>Имя автора</label>
@@ -205,10 +187,11 @@
     </main>
 
     <footer>
-        © BookSwap 2023. Все права защищены.
+        © BookSwap 2025. Все права защищены.
     </footer>
 
     <script>
+        
         // Функция для установки cookie
         function setCookie(name, value, days) {
             let expires = '';
@@ -261,7 +244,7 @@
             const passwordInput = document.getElementById('passwordInput').value;
 
             if (!loginInput || !passwordInput) {
-                alert('Пожалуйста, введите логин и пароль.');
+                showNotification('Пожалуйста, введите логин и пароль.');
                 return;
             }
 
@@ -279,11 +262,11 @@
                     setCookie('username', data.userName, 7);
                     setCookie('userId', data._id, 7);
                     updateAuthDisplay();
-                    alert('Вы успешно вошли в систему!');
+                    showNotification('Вы успешно вошли в систему!');
                 })
                 .catch(error => {
                     console.error('Ошибка:', error);
-                    alert('Ошибка авторизации: ' + error.message);
+                    showNotification('Ошибка авторизации: ' + error.message);
                 });
         }
 
@@ -295,7 +278,9 @@
         }
 
         // Инициализация
-        document.addEventListener('DOMContentLoaded', updateAuthDisplay);
+        document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('notificationModal').style.display = 'none';
+});
 
         // Управление шагами формы
         let currentStep = 1;
@@ -417,7 +402,7 @@
                 const categories = document.querySelectorAll('#step1 input[name="category"]:checked');
                 const status = document.querySelector('#step1 input[name="status"]:checked');
                 if (categories.length === 0 || !status) {
-                    alert('Пожалуйста, выберите хотя бы один жанр и состояние книги.');
+                    showNotification('Пожалуйста, выберите хотя бы один жанр и состояние книги.');
                     return;
                 }
                 goToStep(2);
@@ -430,7 +415,7 @@
             const wishCategories = document.querySelectorAll('#step2 input[name="wishCategory"]:checked');
             const wishStatus = document.querySelector('#step2 input[name="wishStatus"]:checked');
             if (wishCategories.length === 0 || !wishStatus) {
-                alert('Пожалуйста, выберите хотя бы один желаемый жанр и состояние книги.');
+                showNotification('Пожалуйста, выберите хотя бы один желаемый жанр и состояние книги.');
                 return;
             }
             goToStep(3);
@@ -447,8 +432,8 @@
     async function submitForm() {
     const username = getCookie('username');
     const userId = getCookie('userId');
-    if (!username || !userId) {
-        alert('Пожалуйста, войдите в систему, чтобы оформить заявку на обмен.');
+    if (!username) {
+        showNotification('Пожалуйста, войдите в систему, чтобы оформить заявку на обмен.');
         return;
     }
 
@@ -484,7 +469,7 @@
     };
     console.log('Отправляемые данные:', exchangeData);
     try {
-        alert(exchangeData)
+        
         const response = await fetch('https://serverbook-1-dhna.onrender.com/api/exchangeBook', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -492,12 +477,13 @@
         });
         
         if (!response.ok) throw new Error('Ошибка отправки');
-        alert('Заявка на обмен успешно оформлена!');
+        showNotification('Заявка на обмен успешно оформлена!');
+        console.log(response.json())
         formData = {};
         goToStep(1);
     } catch (error) {
         console.error('Ошибка:', error);
-        alert('Произошла ошибка при отправке данных.' + error.message);
+        showNotification('Произошла ошибка при отправке данных: ' + error.message);
     }
 }
 
@@ -548,20 +534,71 @@
         }
 
         function showHint(input) {
-        const hint = input.getAttribute('data-hint');
-        if (hint) {
-            const hintContainer = document.getElementById('hintContainer');
-            hintContainer.textContent = hint;
-            hintContainer.style.display = 'block';
-            const rect = input.getBoundingClientRect();
-            hintContainer.style.left = (rect.left + window.scrollX) + 'px';
-            hintContainer.style.top = (rect.bottom + window.scrollY + 5) + 'px';
+    const hint = input.getAttribute('data-hint');
+    if (!hint) return;
+
+    const hintContainer = document.getElementById('hintContainer');
+    let label = input.previousElementSibling;
+
+    if (!label || label.tagName !== 'LABEL') {
+        const inputId = input.id;
+        if (inputId) {
+            label = document.querySelector(`label[for="${inputId}"]`);
         }
     }
 
-    function hideHint() {
-        document.getElementById('hintContainer').style.display = 'none';
-    }
+    if (!label) return;
+
+    hintContainer.textContent = hint;
+    hintContainer.style.display = 'block';
+
+    const labelRect = label.getBoundingClientRect();
+    const formRect = document.querySelector('.exchange-form').getBoundingClientRect();
+
+    // Позиция относительно .exchange-form
+    const leftPosition = labelRect.left - formRect.left + (labelRect.width / 2);
+    const topPosition = labelRect.top - formRect.top - hintContainer.offsetHeight - 5;
+
+    hintContainer.style.left = `${leftPosition}px`;
+    hintContainer.style.top = `${topPosition}px`;
+}
+
+function hideHint() {
+    document.getElementById('hintContainer').style.display = 'none';
+}
+function showNotification(message, isError = false) {
+    const modal = document.getElementById('notificationModal');
+    
+    modal.querySelector('.close').onclick = null;
+    modal.querySelector('.modal-ok-btn').onclick = null;
+
+    const closeHandler = () => {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    };
+
+    modal.querySelector('.close').onclick = closeHandler;
+    modal.querySelector('.modal-ok-btn').onclick = closeHandler;
+    modal.onclick = (e) => e.target === modal && closeHandler();
+
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    modal.classList.toggle('error', isError);
+    const messageElement = document.getElementById('notificationMessage');
+    messageElement.textContent = message;
+    messageElement.style.overflow = 'hidden';
+    modal.style.alignItems = 'center';
+}
+
     </script>
+<div id="notificationModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p id="notificationMessage"></p>
+        <div class="modal-buttons">
+            <button class="modal-ok-btn">OK</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>

@@ -9,11 +9,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="main.css">
     <script src="cookie.js"></script>
+    <script src="showNotification.js"></script>
 </head>
 <body>
     <header class="header">
         <div class="logo-container">
-            <img src="logo.png" class="logo" alt="BookSwap Logo" onerror="this.src='placeholder-logo.png'">
+            <img src="images/logo.png" class="logo" alt="BookSwap Logo" onerror="this.src='placeholder-logo.png'">
             <h1>BookSwap</h1>
         </div>
         <div id="authContainer"></div> <!-- Динамический контейнер для авторизации -->
@@ -47,9 +48,17 @@
     </main>
 
     <footer>
-        © BookSwap 2023. Все права защищены.
+        © BookSwap 2025. Все права защищены.
     </footer>
-
+    <div id="notificationModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p id="notificationMessage"></p>
+            <div class="modal-buttons">
+                <button class="modal-ok-btn">OK</button>
+            </div>
+        </div>
+    </div>
     <script>
         // Функция для установки cookie
         function setCookie(name, value, days) {
@@ -107,7 +116,7 @@
             const passwordInput = document.getElementById('passwordInput').value;
 
             if (!loginInput || !passwordInput) {
-                alert('Пожалуйста, введите логин и пароль.');
+                showNotification('Пожалуйста, введите логин и пароль.');
                 return;
             }
 
@@ -126,11 +135,11 @@
                 .then(data => {
                     setCookie('username', data.userName, 7); // Сохраняем имя пользователя в cookie на 7 дней
                     updateAuthDisplay();
-                    alert('Вы успешно вошли в систему!');
+                    showNotification('Вы успешно вошли в систему!');
                 })
                 .catch(error => {
                     console.error('Ошибка:', error);
-                    alert('Ошибка авторизации: ' + error.message);
+                    showNotification('Ошибка авторизации: ' + error.message);
                 });
         }
 
@@ -141,7 +150,12 @@
         }
 
         // Инициализация при загрузке страницы
-        document.addEventListener('DOMContentLoaded', updateAuthDisplay);
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAuthDisplay();
+            // Убрано перенаправление на login.html и вызовы loadPersonalData, loadBooksForReview, showSection
+            // так как они не применимы к main1-1.html
+        });
     </script>
+
 </body>
 </html>

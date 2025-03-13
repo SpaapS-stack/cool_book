@@ -430,8 +430,40 @@ a:active {
     font-family: 'Roboto', sans-serif;
     font-size: 14px;
     transition: background 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
 }
-
 .logout-btn:hover {
     background: #45a049;
+}
+.book-item, .exchange-item {
+    margin-bottom: 15px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.3s ease;
+}
+.book-item:hover, .exchange-item:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.book-item h3, .exchange-item h3 {
+    font-size: 1.2em;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+.book-item p, .exchange-item p {
+    font-size: 0.95em;
+    color: #666;
+    margin: 4px 0;
+}
+.genre-tag {
+    display: inline-block;
+    background: #f0f0f0;
+    padding: 4px 8px;
+    margin: 2px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    color: #4CAF50;
 }
