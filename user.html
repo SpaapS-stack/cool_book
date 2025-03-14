@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="user.css">
     <script src="cookie.js"></script>
+    <script src="showNotification.js"></script>
 </head>
 <body>
     <header class="header">
@@ -118,57 +119,102 @@
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const username = getCookie('username');
-            if (!username) {
-                window.location.href = 'login.html';
-            } else {
-                document.getElementById('username').textContent = username;
-                loadPersonalData();
-                loadBooksForReview();
-                showSection('proposals');
-            }
+
+function setCookie(name, value, days) {
+    let expires = '';
+    if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = `; expires=${date.toUTCString()}`;
+    }
+    document.cookie = `${name}=${value || ''}${expires}; path=/`;
+}
+
+function login() {
+    const loginInput = document.getElementById('loginInput').value;
+    const passwordInput = document.getElementById('passwordInput').value;
+
+    fetch(`https://serverbook-1-dhna.onrender.com/api/login?userName=${loginInput}&password=${passwordInput}`)
+        .then(response => {
+            if (!response.ok) throw new Error('Неверный логин или пароль');
+            return response.json();
+        })
+        .then(data => {
+            setCookie('username', data.userName, 7);
+            setCookie('userId', data._id, 7); // Сохраняем _id как userId
+            window.location.href = 'main1-1.html';
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            alert('Ошибка авторизации: ' + error.message);
         });
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const username = getCookie('username');
+    const userId = getCookie('userId');
+    if (!username || !userId) {
+        console.error('Куки username или userId отсутствуют');
+        window.location.href = 'login.html';
+        return;
+    }
+    document.getElementById('username').textContent = username;
+    loadPersonalData();
+    loadBooksForReview();
+    showSection('proposals');
+});
 
         async function loadPersonalData() {
-            try {
-                const response = await fetch(`https://serverbook-1-dhna.onrender.com/api/getUserData?userName=${getCookie('username')}`);
-                if (!response.ok) throw new Error('Ошибка загрузки данных');
-                const data = await response.json();
-                if (data) {
-                    document.getElementById('firstName').value = data.firstName || '';
-                    document.getElementById('lastName').value = data.lastName || '';
-                    document.getElementById('secondName').value = data.secondName || '';
-                    document.getElementById('addCountry').value = data.addCountry || '';
-                    document.getElementById('addrIndex').value = data.addrIndex || '';
-                    document.getElementById('addrCity').value = data.addrCity || '';
-                    document.getElementById('addrStreet').value = data.addrStreet || '';
-                    document.getElementById('addrStructure').value = data.addrStructure || '';
-                    document.getElementById('addrApart').value = data.addrApart || '';
-                }
-            } catch (error) {
-                console.error('Ошибка загрузки данных:', error);
-            }
+    try {
+        const username = getCookie('username');
+        if (!username) {
+            console.error('Имя пользователя не найдено в куки');
+            window.location.href = 'login.html'; // Перенаправление на логин
+            return;
         }
+        console.log(`Загрузка данных для пользователя: ${username}`);
+        const response = await fetch(`https://serverbook-1-dhna.onrender.com/api/getUserData?userName=${username}`);
+        if (response.status === 404) {
+            console.warn('Пользователь не найден');
+            return;
+        }
+        if (!response.ok) throw new Error(`Ошибка сервера: ${response.status}`);
+        const data = await response.json();
+        document.getElementById('firstName').value = data.firstName || '';
+        document.getElementById('lastName').value = data.lastName || '';
+        // Остальные поля...
+    } catch (error) {
+        console.error('Ошибка загрузки данных:', error);
+    }
+}
 
         async function savePersonalData(event) {
-            event.preventDefault();
-            try {
-                const response = await fetch('https://serverbook-1-dhna.onrender.com/api/changeUser', {
-                    method: 'PUT',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        idUser: getCookie('userId'),
-                        ...Object.fromEntries(new FormData(event.target))
-                    })
-                });
-                if (response.ok) alert('Данные сохранены');
-                else throw new Error('Ошибка сохранения');
-            } catch (error) {
-                console.error('Ошибка сохранения:', error);
-                alert('Произошла ошибка при сохранении данных');
-            }
+    event.preventDefault();
+    try {
+        const userId = getCookie('userId');
+        if (!userId) {
+            console.error('ID пользователя не найден в куки');
+            alert('ID пользователя не найден. Пожалуйста, войдите в систему.');
+            return;
         }
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData);
+        console.log('Отправляемые данные:', { idUser, ...data });
+        const response = await fetch('https://serverbook-1-dhna.onrender.com/api/changeUser', {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ idUser, ...data })
+        });
+        if (response.ok) {
+            alert('Данные сохранены');
+        } else {
+            const errorData = await response.json();
+            throw new Error(`Ошибка сервера: ${response.status} - ${errorData.message}`);
+        }
+    } catch (error) {
+        console.error('Ошибка сохранения:', error);
+        alert('Произошла ошибка при сохранении данных: ' + error.message);
+    }
+}
 
         async function loadProposals() {
             try {
@@ -210,49 +256,59 @@
         }
 
         async function loadWishlist() {
-            try {
-                const userId = getCookie('userId');
-                if (!userId) throw new Error('ID пользователя не найден в cookies');
-                
-                const response = await fetch(`https://serverbook-1-dhna.onrender.com/api/getWishBooks?idUser=${userId}`);
-                if (!response.ok) {
-                    throw new Error(`Сервер вернул ошибку: ${response.status} ${response.statusText}`);
-                }
-                const wishes = await response.json();
-                const list = document.getElementById('wishlist-genres');
-                list.innerHTML = wishes.map(wish => `
-                    <div class="book-item">
-                        <h3>Жанры</h3>
-                        <p>${wish.category.map(genre => `<span class="genre-tag">${genre}</span>`).join(' ') || 'Не указаны'}</p>
-                        <p>Состояние: ${wish.status || 'Не указано'}</p>
-                    </div>
-                `).join('') || '<p>Желаемые жанры отсутствуют</p>';
-            } catch (error) {
-                console.error('Ошибка загрузки желаемых жанров:', error);
-                document.getElementById('wishlist-genres').innerHTML = `<p>Ошибка загрузки: ${error.message}</p>`;
-            }
+    try {
+        const userId = getCookie('userId');
+        if (!userId) {
+            showNotification('ID пользователя не найден. Пожалуйста, войдите снова.', true);
+            window.location.href = 'login.html';
+            return;
         }
+        const response = await fetch(`https://serverbook-1-dhna.onrender.com/api/getWishBooks?idUser=${userId}`);
+        if (!response.ok) {
+            throw new Error(`Сервер вернул ошибку: ${response.status} ${response.statusText}`);
+        }
+        const wishes = await response.json();
+        const list = document.getElementById('wishlist-genres');
+        list.innerHTML = wishes.map(wish => `
+            <div class="book-item">
+                <h3>Жанры</h3>
+                <p>${wish.category.map(genre => `<span class="genre-tag">${genre}</span>`).join(' ') || 'Не указаны'}</p>
+                <p>Состояние: ${wish.status || 'Не указано'}</p>
+            </div>
+        `).join('') || '<p>Желаемые жанры отсутствуют</p>';
+    } catch (error) {
+        console.error('Ошибка загрузки желаемых жанров:', error);
+        document.getElementById('wishlist-genres').innerHTML = `<p>Ошибка загрузки: ${error.message}</p>`;
+    }
+}
 
-        async function loadCompletedExchanges() {
-            try {
-                const userResponse = await fetch(`https://serverbook-1-dhna.onrender.com/api/getUserData?userName=${getCookie('username')}`);
-                const userData = await userResponse.json();
-                const response = await fetch(`https://serverbook-1-dhna.onrender.com/api/getBooksSdelka?idUser=${getCookie('userId')}`);
-                if (!response.ok) throw new Error('Ошибка загрузки завершённых обменов');
-                const exchanges = await response.json();
-                const list = document.getElementById('completed-exchanges-list');
-                list.innerHTML = exchanges.map(exchange => `
-                    <div class="book-item">
-                        <h3>${exchange.bookName1 || 'Неизвестно'}</h3>
-                        <p>Автор: ${exchange.author.firstName} ${exchange.author.lastName}</p>
-                        <p>Вы: ${userData.userName} (${userData.addrCity || 'Город не указан'})</p>
-                    </div>
-                `).join('') || '<p>Завершённые обмены отсутствуют</p>';
-            } catch (error) {
-                console.error('Ошибка загрузки завершённых обменов:', error);
-                document.getElementById('completed-exchanges-list').innerHTML = '<p>Ошибка загрузки</p>';
-            }
+async function loadCompletedExchanges() {
+    try {
+        const userId = getCookie('userId');
+        if (!userId) {
+            showNotification('ID пользователя не найден. Пожалуйста, войдите снова.', true);
+            window.location.href = 'login.html';
+            return;
         }
+        const userResponse = await fetch(`https://serverbook-1-dhna.onrender.com/api/getUserData?userName=${getCookie('username')}`);
+        if (!userResponse.ok) throw new Error('Ошибка загрузки данных пользователя');
+        const userData = await userResponse.json();
+        const response = await fetch(`https://serverbook-1-dhna.onrender.com/api/getBooksSdelka?idUser=${userId}`);
+        if (!response.ok) throw new Error(`Ошибка сервера: ${response.status}`);
+        const exchanges = await response.json();
+        const list = document.getElementById('completed-exchanges-list');
+        list.innerHTML = exchanges.map(exchange => `
+            <div class="book-item">
+                <h3>${exchange.bookName1 || 'Неизвестно'}</h3>
+                <p>Автор: ${exchange.author?.firstName || ''} ${exchange.author?.lastName || ''}</p>
+                <p>Вы: ${userData.userName} (${userData.addrCity || 'Город не указан'})</p>
+            </div>
+        `).join('') || '<p>Завершённые обмены отсутствуют</p>';
+    } catch (error) {
+        console.error('Ошибка загрузки завершённых обменов:', error);
+        document.getElementById('completed-exchanges-list').innerHTML = `<p>Ошибка загрузки: ${error.message}</p>`;
+    }
+}
 
         async function loadBooksForReview() {
             try {
