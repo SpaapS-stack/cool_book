@@ -254,21 +254,20 @@
             });
 
             fetch(`https://serverbook-1-dhna.onrender.com/api/login?${params.toString()}`)
-                .then(response => {
-                    if (!response.ok) throw new Error('Неверный логин или пароль');
-                    return response.json();
-                })
-                .then(data => {
-                    setCookie('username', data.userName, 7);
-                    setCookie('userId', data._id, 7);
-                    updateAuthDisplay();
-                    showNotification('Вы успешно вошли в систему!');
-                })
-                .catch(error => {
-                    console.error('Ошибка:', error);
-                    showNotification('Ошибка авторизации: ' + error.message);
-                });
-        }
+        .then(response => {
+            if (!response.ok) throw new Error('Неверный логин или пароль');
+            return response.json();
+        })
+        .then(data => {
+            setCookie('username', data.userName, 7);
+            setCookie('userId', data._id, 7); // Установка userId из ответа сервера
+            updateAuthDisplay();
+            showNotification('Вы успешно вошли в систему!');
+        })
+        .catch(error => {
+            showNotification('Ошибка авторизации: ' + error.message);
+        });
+}
 
         // Функция выхода
         function logout() {
@@ -432,11 +431,10 @@
     async function submitForm() {
     const username = getCookie('username');
     const userId = getCookie('userId');
-    if (!username) {
+    if (!username || !userId) {
         showNotification('Пожалуйста, войдите в систему, чтобы оформить заявку на обмен.');
         return;
     }
-
     preserveInputValues(3);
     const step3Inputs = document.querySelectorAll('#step3 input[required]');
     let valid = true;
