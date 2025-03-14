@@ -58,45 +58,37 @@
         const confirmPassword = document.getElementById('confirmPassword');
 
         async function handleSubmit(e) {
-            e.preventDefault();
-
-            // Валидация паролей
-            if (password.value !== confirmPassword.value) {
-                document.getElementById('confirmError').style.display = 'block';
-                return;
-            }
-
-            // Сбор данных формы
-            const userData = {
-                userName: document.getElementById('username').value,
-                email: document.getElementById('email').value,
-                password: document.getElementById('password').value
-            };
-
-            try {
-                const response = await fetch('https://serverbook-1-dhna.onrender.com/api/registration', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(userData)
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    setCookie('username', userData.userName, 7); // Сохраняем имя пользователя
-                    setCookie('userId', result._id, 7); // Сохраняем ID пользователя
-                    window.location.href = 'main1-1.html'; // Перенаправляем на главную страницу
-                } else {
-                    alert(result.error || 'Ошибка регистрации');
-                }
-            } catch (error) {
-                console.error('Ошибка:', error);
-                alert('Сервер недоступен');
-            }
+    e.preventDefault();
+    if (password.value !== confirmPassword.value) {
+        document.getElementById('confirmError').style.display = 'block';
+        return;
+    }
+    const userData = {
+        userName: document.getElementById('username').value,
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value
+    };
+    try {
+        const response = await fetch('https://serverbook-1-dhna.onrender.com/api/registration', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(userData)
+        });
+        const result = await response.json();
+        if (response.ok) {
+            setCookie('username', userData.userName, 7);
+            setCookie('userId', result._id, 7); // Сохраняем _id как userId
+            console.log('Установлены куки:', { username: userData.userName, userId: result._id });
+            window.location.href = 'main1-1.html';
+        } else {
+            console.error('Ошибка сервера:', result);
+            alert(result.error || 'Ошибка регистрации');
         }
-
+    } catch (error) {
+        console.error('Ошибка сети:', error);
+        alert('Сервер недоступен');
+    }
+}
         form.addEventListener('submit', handleSubmit);
     </script>
 </body>
