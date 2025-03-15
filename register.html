@@ -63,26 +63,37 @@
         document.getElementById('confirmError').style.display = 'block';
         return;
     }
+    
     const userData = {
         userName: document.getElementById('username').value,
         email: document.getElementById('email').value,
         password: document.getElementById('password').value
     };
+
     try {
-        const response = await fetch('https://serverbook-1-dhna.onrender.com/api/registration', {
+        const response = await fetch('https://serverbook-1-dhna.onrender.com/api/registration', { // Изменено на /api/registration
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(userData)
         });
-        const result = await response.json();
-        if (response.ok) {
-            setCookie('username', userData.userName, 7);
-            setCookie('userId', result._id, 7); // Сохраняем _id как userId
-            console.log('Установлены куки:', { username: userData.userName, userId: result._id });
-            window.location.href = 'main1-1.html';
-        } else {
-            console.error('Ошибка сервера:', result);
-            alert(result.error || 'Ошибка регистрации');
+
+        const rawResponse = await response.text();
+        
+        try {
+            const result = JSON.parse(rawResponse);
+            
+            if (response.ok) {
+                setCookie('username', userData.userName, 7);
+                setCookie('userId', result._id, 7);
+                window.location.href = 'main1-1.html';
+            } else {
+                console.error('Ошибка сервера:', result);
+                alert(result.error || 'Ошибка регистрации');
+            }
+        } catch (parseError) {
+            console.error('Ошибка парсинга JSON:', parseError);
+            console.log('Сырой ответ сервера:', rawResponse);
+            alert('Некорректный ответ сервера: ' + rawResponse);
         }
     } catch (error) {
         console.error('Ошибка сети:', error);
