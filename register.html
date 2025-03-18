@@ -20,12 +20,13 @@
                 <div class="error-message" id="emailError">Некорректный email</div>
             </div>
             <div class="input-group">
-                <input type="password" id="password" placeholder="Пароль" minlength="8" pattern="^(?=.*\d).+$" required>
+                <input type="password" id="password" placeholder="Пароль" required>
                 <div class="password-hint">
                     Пароль должен содержать:
                     <ul style="margin: 5px 0 0 20px;">
-                        <li>Минимум 8 символов</li>
+                        <li>От 8 до 15 символов</li>
                         <li>Хотя бы одну цифру</li>
+                        <li>Хотя бы одну букву</li>
                     </ul>
                 </div>
                 <div class="error-message" id="passwordError">Не соответствует требованиям</div>
@@ -42,28 +43,78 @@
     </div>
 
     <script>
-        // Функция для установки cookie
-        function setCookie(name, value, days) {
-            let expires = '';
-            if (days) {
-                const date = new Date();
-                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                expires = `; expires=${date.toUTCString()}`;
-            }
-            document.cookie = `${name}=${value || ''}${expires}; path=/`;
-        }
+// Функция для установки cookie (остается без изменений)
+function setCookie(name, value, days) {
+    let expires = '';
+    if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = `; expires=${date.toUTCString()}`;
+    }
+    document.cookie = `${name}=${value || ''}${expires}; path=/`;
+}
 
-        const form = document.getElementById('registerForm');
-        const password = document.getElementById('password');
-        const confirmPassword = document.getElementById('confirmPassword');
+// Функция для показа кастомного alert
+function showCustomAlert(message) {
+    let alertBox = document.querySelector('.custom-alert');
+    if (!alertBox) {
+        alertBox = document.createElement('div');
+        alertBox.className = 'custom-alert';
+        document.body.appendChild(alertBox);
+    }
+    alertBox.textContent = message;
+    alertBox.style.display = 'block';
+    setTimeout(() => {
+        alertBox.style.display = 'none';
+    }, 3000); // Скрыть через 3 секунды
+}
 
-        async function handleSubmit(e) {
-    e.preventDefault();
+const form = document.getElementById('registerForm');
+const password = document.getElementById('password');
+const confirmPassword = document.getElementById('confirmPassword');
+const passwordError = document.getElementById('passwordError');
+const confirmError = document.getElementById('confirmError');
+
+// Валидация пароля
+function validatePassword() {
+    const passwordValue = password.value;
+    const hasMinLength = passwordValue.length >= 8;
+    const hasMaxLength = passwordValue.length <= 15;
+    const hasDigit = /\d/.test(passwordValue);
+    const hasLetter = /[a-zA-Z]/.test(passwordValue);
+
+    if (!hasMinLength || !hasMaxLength || !hasDigit || !hasLetter) {
+        passwordError.style.display = 'block';
+        return false;
+    } else {
+        passwordError.style.display = 'none';
+        return true;
+    }
+}
+
+// Валидация подтверждения пароля
+function validateConfirmPassword() {
     if (password.value !== confirmPassword.value) {
-        document.getElementById('confirmError').style.display = 'block';
+        confirmError.style.display = 'block';
+        return false;
+    } else {
+        confirmError.style.display = 'none';
+        return true;
+    }
+}
+
+// Обработка отправки формы
+async function handleSubmit(e) {
+    e.preventDefault();
+
+    const isPasswordValid = validatePassword();
+    const isConfirmValid = validateConfirmPassword();
+
+    if (!isPasswordValid || !isConfirmValid) {
+        showCustomAlert('Пожалуйста, проверьте введенные данные.');
         return;
     }
-    
+
     const userData = {
         userName: document.getElementById('username').value,
         email: document.getElementById('email').value,
@@ -71,36 +122,37 @@
     };
 
     try {
-        const response = await fetch('https://serverbook-1-dhna.onrender.com/api/registration', { // Изменено на /api/registration
+        const response = await fetch('https://serverbook-1-dhna.onrender.com/api/registration', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(userData)
         });
 
         const rawResponse = await response.text();
-        
+
         try {
             const result = JSON.parse(rawResponse);
-            
+
             if (response.ok) {
                 setCookie('username', userData.userName, 7);
                 setCookie('userId', result._id, 7);
                 window.location.href = 'main1-1.html';
             } else {
                 console.error('Ошибка сервера:', result);
-                alert(result.error || 'Ошибка регистрации');
+                showCustomAlert(result.error || 'Ошибка регистрации');
             }
         } catch (parseError) {
             console.error('Ошибка парсинга JSON:', parseError);
             console.log('Сырой ответ сервера:', rawResponse);
-            alert('Некорректный ответ сервера: ' + rawResponse);
+            showCustomAlert('Некорректный ответ сервера: ' + rawResponse);
         }
     } catch (error) {
         console.error('Ошибка сети:', error);
-        alert('Сервер недоступен');
+        showCustomAlert('Сервер недоступен');
     }
 }
-        form.addEventListener('submit', handleSubmit);
+
+form.addEventListener('submit', handleSubmit);
     </script>
 </body>
 </html>

@@ -194,76 +194,162 @@
     </footer>
 
     <script>
-        
-        // Функция для установки cookie
-        function setCookie(name, value, days) {
-            let expires = '';
-            if (days) {
-                const date = new Date();
-                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                expires = `; expires=${date.toUTCString()}`;
-            }
-            document.cookie = `${name}=${value || ''}${expires}; path=/`;
+// Функция для установки cookie
+function setCookie(name, value, days) {
+    let expires = '';
+    if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = `; expires=${date.toUTCString()}`;
+    }
+    document.cookie = `${name}=${value || ''}${expires}; path=/`;
+}
+
+// Функция для получения cookie
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+// Функция для показа кастомного alert
+function showCustomAlert(message) {
+    const alertBox = document.getElementById('customAlert') || document.createElement('div');
+    if (!alertBox.id) {
+        alertBox.id = 'customAlert';
+        alertBox.className = 'custom-alert';
+        document.body.appendChild(alertBox);
+    }
+    alertBox.textContent = message;
+    alertBox.style.display = 'block';
+    setTimeout(() => alertBox.style.display = 'none', 3000);
+}
+
+// Валидация шага 1: "Хочу обменять"
+function validateStep1() {
+    const authorSurname = document.getElementById('author_surname').value;
+    const authorName = document.querySelector('#step1 input[name="author_name"]').value;
+    const bookTitle = document.querySelector('#step1 input[name="book_title"]').value;
+    const isbn = document.querySelector('#step1 input[name="isbn"]').value;
+    const year = document.querySelector('#step1 input[name="year"]').value;
+    const categories = document.querySelectorAll('#step1 input[name="category"]:checked');
+    const status = document.querySelector('#step1 input[name="status"]:checked');
+
+    const currentYear = new Date().getFullYear();
+
+    const rules = [
+        { value: authorSurname, regex: /^[А-Яа-яA-Za-z]{1,50}$/, message: 'Фамилия автора: только буквы кириллицы или латиницы, до 50 символов.' },
+        { value: authorName, regex: /^[А-Яа-яA-Za-z]{0,20}$/, message: 'Имя автора: только буквы кириллицы или латиницы, до 20 символов.' },
+        { value: bookTitle, regex: /^[А-Яа-яA-Za-z0-9"'\-\.,!? ]{1,50}$/, message: 'Название книги: до 50 символов, буквы, цифры, кавычки, тире, знаки препинания.' },
+        { value: isbn, regex: /^\d{3}-\d-\d{3}-\d{5}-\d$|^$/, message: 'ISBN: формат XXX-X-XXX-XXXXX-X или пустое.' },
+        { value: year, regex: /^\d{4}$/, condition: Number(year) <= currentYear, message: `Год издания: 4 цифры, не больше ${currentYear}.` },
+        { value: categories.length, condition: categories.length > 0, message: 'Выберите хотя бы один жанр.' },
+        { value: status, condition: !!status, message: 'Выберите состояние книги.' }
+    ];
+
+    for (const rule of rules) {
+        if ('regex' in rule && !rule.regex.test(rule.value)) {
+            showCustomAlert(rule.message);
+            return false;
         }
-
-        // Функция для получения cookie
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
+        if ('condition' in rule && !rule.condition) {
+            showCustomAlert(rule.message);
+            return false;
         }
+    }
+    return true;
+}
 
-        // Обновление интерфейса авторизации
-        function updateAuthDisplay() {
-            const authContainer = document.getElementById('authContainer');
-            const username = getCookie('username');
-            if (username) {
-                authContainer.innerHTML = `
-                    <div class="auth-fields">
-                        <p>Добро пожаловать, ${username}!</p>
-                        <button type="button" class="logout-btn" onclick="logout()">Выйти</button>
-                    </div>
-                `;
-            } else {
-                authContainer.innerHTML = `
-                    <form class="auth-form">
-                        <div class="auth-fields">
-                            <input type="text" placeholder="Логин" name="login" id="loginInput">
-                            <input type="password" placeholder="Пароль" name="password" id="passwordInput">
-                            <button type="button" id="loginButton">Войти</button>
-                        </div>
-                        <div class="register-link">
-                            <a href="register.html">Нет аккаунта? Зарегистрируйтесь!</a>
-                        </div>
-                    </form>
-                `;
-                document.getElementById('loginButton').addEventListener('click', login);
-            }
+// Валидация шага 3: "Адрес доставки"
+function validateStep3() {
+    const postcode = document.getElementById('delivery_postcode').value;
+    const city = document.getElementById('delivery_city').value;
+    const street = document.getElementById('delivery_street').value;
+    const house = document.getElementById('delivery_house').value;
+    const structure = document.getElementById('delivery_apartment').value; // Исправлено на apartment
+    const apartment = document.getElementById('delivery_apartment').value;
+
+    const rules = [
+        { value: postcode, regex: /^\d{6}$/, message: 'Индекс: ровно 6 цифр.' },
+        { value: city, regex: /^[А-Яа-я]{1,15}$/, message: 'Город: только буквы кириллицы, до 15 символов.' },
+        { value: street, regex: /^[А-Яа-я0-9\-]{1,25}$/, message: 'Улица: буквы кириллицы, цифры, тире, до 25 символов.' },
+        { value: house, regex: /^\d{1,4}[А-Яа-я]?$/, message: 'Номер дома: цифры и одна буква (опционально), до 5 символов.' },
+        { value: structure, regex: /^(\d{1,2}[А-Яа-я]?)?$/, message: 'Номер строения: до 2 цифр и буква (опционально) или пустое.' },
+        { value: apartment, regex: /^\d{0,3}$/, message: 'Номер квартиры: до 3 цифр или пустое.' }
+    ];
+
+    const requiredFields = [
+        { id: 'delivery_surname', message: 'Фамилия обязательна.' },
+        { id: 'delivery_name', message: 'Имя обязательно.' }
+    ];
+
+    for (const field of requiredFields) {
+        if (!document.getElementById(field.id).value) {
+            showCustomAlert(field.message);
+            return false;
         }
+    }
 
-        // Функция входа
-        function login() {
-            const loginInput = document.getElementById('loginInput').value;
-            const passwordInput = document.getElementById('passwordInput').value;
+    for (const rule of rules) {
+        if (!rule.regex.test(rule.value)) {
+            showCustomAlert(rule.message);
+            return false;
+        }
+    }
+    return true;
+}
 
-            if (!loginInput || !passwordInput) {
-                showNotification('Пожалуйста, введите логин и пароль.');
-                return;
-            }
+// Обновление интерфейса авторизации
+function updateAuthDisplay() {
+    const authContainer = document.getElementById('authContainer');
+    const username = getCookie('username');
+    if (username) {
+        authContainer.innerHTML = `
+            <div class="auth-fields">
+                <p>Добро пожаловать, ${username}!</p>
+                <button type="button" class="logout-btn" onclick="logout()">Выйти</button>
+            </div>
+        `;
+    } else {
+        authContainer.innerHTML = `
+            <form class="auth-form">
+                <div class="auth-fields">
+                    <input type="text" placeholder="Логин" name="login" id="loginInput">
+                    <input type="password" placeholder="Пароль" name="password" id="passwordInput">
+                    <button type="button" id="loginButton">Войти</button>
+                </div>
+                <div class="register-link">
+                    <a href="register.html">Нет аккаунта? Зарегистрируйтесь!</a>
+                </div>
+            </form>
+        `;
+        document.getElementById('loginButton').addEventListener('click', login);
+    }
+}
 
-            const params = new URLSearchParams({
-                userName: loginInput,
-                password: passwordInput
-            });
+// Функция входа
+function login() {
+    const loginInput = document.getElementById('loginInput').value;
+    const passwordInput = document.getElementById('passwordInput').value;
 
-            fetch(`https://serverbook-1-dhna.onrender.com/api/login?${params.toString()}`)
+    if (!loginInput || !passwordInput) {
+        showNotification('Пожалуйста, введите логин и пароль.');
+        return;
+    }
+
+    const params = new URLSearchParams({
+        userName: loginInput,
+        password: passwordInput
+    });
+
+    fetch(`https://serverbook-1-dhna.onrender.com/api/login?${params.toString()}`)
         .then(response => {
             if (!response.ok) throw new Error('Неверный логин или пароль');
             return response.json();
         })
         .then(data => {
             setCookie('username', data.userName, 7);
-            setCookie('userId', data._id, 7); // Установка userId из ответа сервера
+            setCookie('userId', data._id, 7);
             updateAuthDisplay();
             showNotification('Вы успешно вошли в систему!');
         })
@@ -272,182 +358,164 @@
         });
 }
 
-        // Функция выхода
-        function logout() {
-            setCookie('username', '', -1);
-            setCookie('userId', '', -1);
-            updateAuthDisplay();
-        }
+// Функция выхода
+function logout() {
+    setCookie('username', '', -1);
+    setCookie('userId', '', -1);
+    updateAuthDisplay();
+}
 
-        // Инициализация
-        document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('notificationModal').style.display = 'none';
-});
+// Управление шагами формы
+let currentStep = 1;
+let formData = {};
 
-        // Управление шагами формы
-        let currentStep = 1;
-        let formData = {};
-
-        function preserveInputValues(step) {
-            if (step === 1) {
-                const inputs = document.querySelectorAll('#step1 input');
-                inputs.forEach(input => {
-                    const key = `step1_${input.name}`;
-                    if (input.type === 'checkbox' || input.type === 'radio') {
-                        formData[key] = input.checked;
-                    } else {
-                        formData[key] = input.value;
-                    }
-                });
-                formData.step1_category = Array.from(document.querySelectorAll('#step1 input[name="category"]:checked'))
-                    .map(cb => cb.parentElement.textContent.trim());
-                const status = document.querySelector('#step1 input[name="status"]:checked');
-                formData.step1_status = status ? status.value : '';
-            } else if (step === 2) {
-                const inputs = document.querySelectorAll('#step2 input');
-                inputs.forEach(input => {
-                    const key = `step2_${input.name}`;
-                    if (input.type === 'checkbox' || input.type === 'radio') {
-                        formData[key] = input.checked;
-                    }
-                });
-                formData.step2_wishCategory = Array.from(document.querySelectorAll('#step2 input[name="wishCategory"]:checked'))
-                    .map(cb => cb.parentElement.textContent.trim());
-                const wishStatus = document.querySelector('#step2 input[name="wishStatus"]:checked');
-                formData.step2_wishStatus = wishStatus ? wishStatus.value : '';
-            } else if (step === 3) {
-                const inputs = document.querySelectorAll('#step3 input');
-                inputs.forEach(input => {
-                    formData[`step3_${input.name}`] = input.value;
-                });
+function preserveInputValues(step) {
+    if (step === 1) {
+        const inputs = document.querySelectorAll('#step1 input');
+        inputs.forEach(input => {
+            const key = `step1_${input.name}`;
+            if (input.type === 'checkbox' || input.type === 'radio') {
+                formData[key] = input.checked;
+            } else {
+                formData[key] = input.value;
             }
-        }
-
-        function restoreInputValues(step) {
-            if (step === 1) {
-                const inputs = document.querySelectorAll('#step1 input');
-                inputs.forEach(input => {
-                    const key = `step1_${input.name}`;
-                    if (formData[key] !== undefined) {
-                        if (input.type === 'checkbox' || input.type === 'radio') {
-                            input.checked = formData[key];
-                        } else {
-                            input.value = formData[key] || '';
-                        }
-                    }
-                });
-                if (formData.step1_category) {
-                    document.querySelectorAll('#step1 input[name="category"]').forEach(cb => {
-                        cb.checked = formData.step1_category.includes(cb.parentElement.textContent.trim());
-                    });
-                }
-                if (formData.step1_status) {
-                    document.querySelectorAll('#step1 input[name="status"]').forEach(radio => {
-                        radio.checked = radio.value === formData.step1_status;
-                    });
-                }
-            } else if (step === 2) {
-                const inputs = document.querySelectorAll('#step2 input');
-                inputs.forEach(input => {
-                    const key = `step2_${input.name}`;
-                    if (formData[key] !== undefined) {
-                        input.checked = formData[key];
-                    }
-                });
-                if (formData.step2_wishCategory) {
-                    document.querySelectorAll('#step2 input[name="wishCategory"]').forEach(cb => {
-                        cb.checked = formData.step2_wishCategory.includes(cb.parentElement.textContent.trim());
-                    });
-                }
-                if (formData.step2_wishStatus) {
-                    document.querySelectorAll('#step2 input[name="wishStatus"]').forEach(radio => {
-                        radio.checked = radio.value === formData.step2_wishStatus;
-                    });
-                }
-            } else if (step === 3) {
-                const inputs = document.querySelectorAll('#step3 input');
-                inputs.forEach(input => {
-                    const key = `step3_${input.name}`;
-                    if (formData[key] !== undefined) {
-                        input.value = formData[key] || '';
-                    }
-                });
+        });
+        formData.step1_category = Array.from(document.querySelectorAll('#step1 input[name="category"]:checked'))
+            .map(cb => cb.parentElement.textContent.trim());
+        const status = document.querySelector('#step1 input[name="status"]:checked');
+        formData.step1_status = status ? status.value : '';
+    } else if (step === 2) {
+        const inputs = document.querySelectorAll('#step2 input');
+        inputs.forEach(input => {
+            const key = `step2_${input.name}`;
+            if (input.type === 'checkbox' || input.type === 'radio') {
+                formData[key] = input.checked;
             }
-        }
-
-        function goToStep(step) {
-        preserveInputValues(currentStep);
-        document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
-        document.getElementById(`step${step}`).classList.add('active');
-        currentStep = step;
-        restoreInputValues(step);
-        updateFormSections();
-        updateNextButton(); // Добавлено для обновления кнопки при переходе
+        });
+        formData.step2_wishCategory = Array.from(document.querySelectorAll('#step2 input[name="wishCategory"]:checked'))
+            .map(cb => cb.parentElement.textContent.trim());
+        const wishStatus = document.querySelector('#step2 input[name="wishStatus"]:checked');
+        formData.step2_wishStatus = wishStatus ? wishStatus.value : '';
+    } else if (step === 3) {
+        const inputs = document.querySelectorAll('#step3 input');
+        inputs.forEach(input => {
+            formData[`step3_${input.name}`] = input.value;
+        });
     }
+}
 
-        function updateFormSections() {
-            document.querySelectorAll('.form-section').forEach((el, index) => {
-                if (index + 1 < currentStep) {
-                    el.classList.remove('active', 'inactive');
-                } else if (index + 1 === currentStep) {
-                    el.classList.add('active');
-                    el.classList.remove('inactive');
+function restoreInputValues(step) {
+    if (step === 1) {
+        const inputs = document.querySelectorAll('#step1 input');
+        inputs.forEach(input => {
+            const key = `step1_${input.name}`;
+            if (formData[key] !== undefined) {
+                if (input.type === 'checkbox' || input.type === 'radio') {
+                    input.checked = formData[key];
                 } else {
-                    el.classList.add('inactive');
-                    el.classList.remove('active');
+                    input.value = formData[key] || '';
                 }
+            }
+        });
+        if (formData.step1_category) {
+            document.querySelectorAll('#step1 input[name="category"]').forEach(cb => {
+                cb.checked = formData.step1_category.includes(cb.parentElement.textContent.trim());
             });
         }
-
-        function goToStep2() {
-            if (document.getElementById('step1Form').checkValidity()) {
-                const categories = document.querySelectorAll('#step1 input[name="category"]:checked');
-                const status = document.querySelector('#step1 input[name="status"]:checked');
-                if (categories.length === 0 || !status) {
-                    showNotification('Пожалуйста, выберите хотя бы один жанр и состояние книги.');
-                    return;
-                }
-                goToStep(2);
-            } else {
-                document.getElementById('step1Form').reportValidity();
+        if (formData.step1_status) {
+            document.querySelectorAll('#step1 input[name="status"]').forEach(radio => {
+                radio.checked = radio.value === formData.step1_status;
+            });
+        }
+    } else if (step === 2) {
+        const inputs = document.querySelectorAll('#step2 input');
+        inputs.forEach(input => {
+            const key = `step2_${input.name}`;
+            if (formData[key] !== undefined) {
+                input.checked = formData[key];
             }
+        });
+        if (formData.step2_wishCategory) {
+            document.querySelectorAll('#step2 input[name="wishCategory"]').forEach(cb => {
+                cb.checked = formData.step2_wishCategory.includes(cb.parentElement.textContent.trim());
+            });
         }
-
-        function goToStep3() {
-            const wishCategories = document.querySelectorAll('#step2 input[name="wishCategory"]:checked');
-            const wishStatus = document.querySelector('#step2 input[name="wishStatus"]:checked');
-            if (wishCategories.length === 0 || !wishStatus) {
-                showNotification('Пожалуйста, выберите хотя бы один желаемый жанр и состояние книги.');
-                return;
+        if (formData.step2_wishStatus) {
+            document.querySelectorAll('#step2 input[name="wishStatus"]').forEach(radio => {
+                radio.checked = radio.value === formData.step2_wishStatus;
+            });
+        }
+    } else if (step === 3) {
+        const inputs = document.querySelectorAll('#step3 input');
+        inputs.forEach(input => {
+            const key = `step3_${input.name}`;
+            if (formData[key] !== undefined) {
+                input.value = formData[key] || '';
             }
-            goToStep(3);
-        }
-
-        function updateNextButton() {
-        if (currentStep === 2) {
-            const wishCategories = document.querySelectorAll('#step2 input[name="wishCategory"]:checked');
-            const wishStatus = document.querySelector('#step2 input[name="wishStatus"]:checked');
-            document.getElementById('nextBtnStep2').disabled = !(wishCategories.length > 0 && wishStatus);
-        }
+        });
     }
+}
 
-    async function submitForm() {
+function goToStep(step) {
+    if (step > currentStep && currentStep === 1 && !validateStep1()) return;
+    if (step > currentStep && currentStep === 3 && !validateStep3()) return;
+
+    preserveInputValues(currentStep);
+    document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
+    document.getElementById(`step${step}`).classList.add('active');
+    currentStep = step;
+    restoreInputValues(step);
+    updateFormSections();
+    updateNextButton();
+}
+
+function updateFormSections() {
+    document.querySelectorAll('.form-section').forEach((el, index) => {
+        if (index + 1 < currentStep) {
+            el.classList.remove('active', 'inactive');
+        } else if (index + 1 === currentStep) {
+            el.classList.add('active');
+            el.classList.remove('inactive');
+        } else {
+            el.classList.add('inactive');
+            el.classList.remove('active');
+        }
+    });
+}
+
+function goToStep2() {
+    if (validateStep1()) {
+        goToStep(2);
+    }
+}
+
+function goToStep3() {
+    const wishCategories = document.querySelectorAll('#step2 input[name="wishCategory"]:checked');
+    const wishStatus = document.querySelector('#step2 input[name="wishStatus"]:checked');
+    if (wishCategories.length === 0 || !wishStatus) {
+        showCustomAlert('Пожалуйста, выберите хотя бы один желаемый жанр и состояние книги.');
+        return;
+    }
+    goToStep(3);
+}
+
+function updateNextButton() {
+    if (currentStep === 2) {
+        const wishCategories = document.querySelectorAll('#step2 input[name="wishCategory"]:checked');
+        const wishStatus = document.querySelector('#step2 input[name="wishStatus"]:checked');
+        document.getElementById('nextBtnStep2').disabled = !(wishCategories.length > 0 && wishStatus);
+    }
+}
+
+async function submitForm() {
     const username = getCookie('username');
     const userId = getCookie('userId');
     if (!username || !userId) {
-        showNotification('Пожалуйста, войдите в систему, чтобы оформить заявку на обмен.');
+        showCustomAlert('Пожалуйста, войдите в систему, чтобы оформить заявку на обмен.');
         return;
     }
     preserveInputValues(3);
-    const step3Inputs = document.querySelectorAll('#step3 input[required]');
-    let valid = true;
-    step3Inputs.forEach(input => {
-        if (!input.checkValidity()) valid = false;
-    });
-    if (!valid) {
-        step3Inputs.forEach(input => input.reportValidity());
-        return;
-    }
+    if (!validateStep3()) return;
 
     const exchangeData = {
         author_surname: formData.step1_author_surname,
@@ -468,41 +536,33 @@
         addrApart: formData.step3_delivery_apartment,
         isDefault: false
     };
-    console.log('Отправляемые данные:', exchangeData);
+
     try {
-        
         const response = await fetch('https://serverbook-1-dhna.onrender.com/api/exchangeBook', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(exchangeData)
         });
-        
+
         if (!response.ok) throw new Error('Ошибка отправки');
         showNotification('Заявка на обмен успешно оформлена!');
-        console.log(response.json())
         formData = {};
         goToStep(1);
     } catch (error) {
         console.error('Ошибка:', error);
-        showNotification('Произошла ошибка при отправке данных: ' + error.message);
+        showCustomAlert('Произошла ошибка при отправке данных: ' + error.message);
     }
 }
 
 async function loadDeliveryAddress() {
     const username = getCookie('username');
-    if (!username) {
-        console.warn('Имя пользователя не найдено в куки');
-        return;
-    }
+    if (!username) return;
     try {
         const response = await fetch(`https://serverbook-1-dhna.onrender.com/api/getUserData?userName=${username}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });
-        if (response.status === 404) {
-            console.warn('Данные пользователя не найдены');
-            return;
-        }
+        if (response.status === 404) return;
         if (!response.ok) throw new Error(`Ошибка сервера: ${response.status}`);
         const data = await response.json();
         document.getElementById('delivery_surname').value = data.lastName || '';
@@ -518,52 +578,52 @@ async function loadDeliveryAddress() {
     }
 }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            updateAuthDisplay();
-            loadDeliveryAddress();
-        });
-        document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('#step2 input[type="checkbox"], #step2 input[type="radio"]').forEach(input => {
-            input.addEventListener('change', updateNextButton);
+document.addEventListener('DOMContentLoaded', () => {
+    updateAuthDisplay();
+    loadDeliveryAddress();
+    document.querySelectorAll('#step2 input[type="checkbox"], #step2 input[type="radio"]').forEach(input => {
+        input.addEventListener('change', updateNextButton);
+    });
+    const burgerBtn = document.querySelector('.burger-btn');
+    const navList = document.querySelector('.nav-list');
+    burgerBtn.addEventListener('click', () => {
+        burgerBtn.classList.toggle('active');
+        navList.classList.toggle('active');
+    });
+    navList.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            burgerBtn.classList.remove('active');
+            navList.classList.remove('active');
         });
     });
+});
 
-        function clearSelections(step) {
-            if (step === 'step1') {
-                document.querySelectorAll('#step1 input[type="checkbox"]').forEach(cb => cb.checked = false);
-                document.querySelectorAll('#step1 input[type="radio"]').forEach(radio => radio.checked = false);
-            } else if (step === 'step2') {
-                document.querySelectorAll('#step2 input[type="checkbox"]').forEach(cb => cb.checked = false);
-                document.querySelectorAll('#step2 input[type="radio"]').forEach(radio => radio.checked = false);
-            }
-        }
+function clearSelections(step) {
+    if (step === 'step1') {
+        document.querySelectorAll('#step1 input[type="checkbox"]').forEach(cb => cb.checked = false);
+        document.querySelectorAll('#step1 input[type="radio"]').forEach(radio => radio.checked = false);
+    } else if (step === 'step2') {
+        document.querySelectorAll('#step2 input[type="checkbox"]').forEach(cb => cb.checked = false);
+        document.querySelectorAll('#step2 input[type="radio"]').forEach(radio => radio.checked = false);
+    }
+}
 
-        function showHint(input) {
+function showHint(input) {
     const hint = input.getAttribute('data-hint');
     if (!hint) return;
-
     const hintContainer = document.getElementById('hintContainer');
     let label = input.previousElementSibling;
-
     if (!label || label.tagName !== 'LABEL') {
         const inputId = input.id;
-        if (inputId) {
-            label = document.querySelector(`label[for="${inputId}"]`);
-        }
+        if (inputId) label = document.querySelector(`label[for="${inputId}"]`);
     }
-
     if (!label) return;
-
     hintContainer.textContent = hint;
     hintContainer.style.display = 'block';
-
     const labelRect = label.getBoundingClientRect();
     const formRect = document.querySelector('.exchange-form').getBoundingClientRect();
-
-    // Позиция относительно .exchange-form
     const leftPosition = labelRect.left - formRect.left + (labelRect.width / 2);
     const topPosition = labelRect.top - formRect.top - hintContainer.offsetHeight - 5;
-
     hintContainer.style.left = `${leftPosition}px`;
     hintContainer.style.top = `${topPosition}px`;
 }
@@ -571,21 +631,18 @@ async function loadDeliveryAddress() {
 function hideHint() {
     document.getElementById('hintContainer').style.display = 'none';
 }
+
 function showNotification(message, isError = false) {
     const modal = document.getElementById('notificationModal');
-    
     modal.querySelector('.close').onclick = null;
     modal.querySelector('.modal-ok-btn').onclick = null;
-
     const closeHandler = () => {
         modal.style.display = 'none';
         document.body.style.overflow = 'auto';
     };
-
     modal.querySelector('.close').onclick = closeHandler;
     modal.querySelector('.modal-ok-btn').onclick = closeHandler;
     modal.onclick = (e) => e.target === modal && closeHandler();
-
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
     modal.classList.toggle('error', isError);
@@ -594,22 +651,6 @@ function showNotification(message, isError = false) {
     messageElement.style.overflow = 'hidden';
     modal.style.alignItems = 'center';
 }
-document.addEventListener('DOMContentLoaded', () => {
-    const burgerBtn = document.querySelector('.burger-btn');
-    const navList = document.querySelector('.nav-list');
-
-    burgerBtn.addEventListener('click', () => {
-        burgerBtn.classList.toggle('active');
-        navList.classList.toggle('active');
-    });
-
-    navList.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-            burgerBtn.classList.remove('active');
-            navList.classList.remove('active');
-        });
-    });
-});
     </script>
 <div id="notificationModal" class="modal">
     <div class="modal-content">
@@ -620,5 +661,6 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
     </div>
 </div>
+<div class="custom-alert" id="customAlert"></div>
 </body>
 </html>
