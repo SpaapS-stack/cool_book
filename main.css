@@ -437,3 +437,252 @@ a:active {
 .modal.error .modal-ok-btn:hover {
     background: #c0392b;
 }
+
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+/* Стили для бургер-меню */
+/* Стили для бургер-меню (обновленные) */
+.burger-btn {
+    display: none; /* Скрыто по умолчанию на больших экранах */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1000;
+    margin: 0 auto; /* Центрирование кнопки */
+}
+
+.burger-icon,
+.burger-icon::before,
+.burger-icon::after {
+    width: 30px;
+    height: 3px;
+    background: white;
+    display: block;
+    transition: all 0.3s ease;
+}
+
+.burger-icon {
+    position: relative;
+}
+
+.burger-icon::before,
+.burger-icon::after {
+    content: '';
+    position: absolute;
+    left: 0;
+}
+
+.burger-icon::before {
+    top: -8px;
+}
+
+.burger-icon::after {
+    bottom: -8px;
+}
+
+.burger-btn.active .burger-icon {
+    background: transparent;
+}
+
+.burger-btn.active .burger-icon::before {
+    transform: rotate(45deg);
+    top: 0;
+}
+
+.burger-btn.active .burger-icon::after {
+    transform: rotate(-45deg);
+    bottom: 0;
+}
+
+/* Адаптивные стили */
+@media (max-width: 768px) {
+    /* Шапка */
+    .header {
+        flex-direction: column;
+        padding: 15px 20px;
+        align-items: center; /* Центрирование всех элементов */
+        text-align: center;
+    }
+
+    .logo-container {
+        margin-bottom: 10px;
+        justify-content: center; /* Центрирование логотипа и заголовка */
+    }
+
+    .logo {
+        width: 50px;
+        height: 50px;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    /* Авторизация */
+    .auth-fields {
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+        max-width: 300px; /* Ограничение ширины для аккуратности */
+        margin: 0 auto; /* Центрирование полей */
+    }
+
+    .auth-form {
+        width: 100%;
+        align-items: center; /* Центрирование формы */
+    }
+
+    .auth-form input,
+    .auth-form button,
+    .logout-btn {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .register-link {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    /* Навигация */
+    .nav {
+        padding: 10px 20px;
+        position: relative;
+        display: flex;
+        justify-content: center; /* Центрирование бургер-кнопки */
+    }
+
+    .burger-btn {
+        display: block; /* Показываем бургер на мобильных */
+    }
+
+    .nav-list {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: #4CAF50;
+        padding: 10px 0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .nav-list.active {
+        display: flex;
+    }
+
+    .nav-list li {
+        margin: 5px 0;
+        width: 100%;
+        text-align: center;
+        border: none;
+    }
+
+    .nav-list li::after {
+        display: none;
+    }
+
+    /* Основной контент */
+    .main-content {
+        padding: 20px;
+    }
+
+    .welcome-text {
+        padding: 20px;
+        font-size: 16px;
+        margin: 0;
+        max-width: 100%;
+    }
+
+    .welcome-text h2 {
+        font-size: 1.5em;
+    }
+
+    /* Футер */
+    footer {
+        padding: 15px;
+        font-size: 14px;
+    }
+
+    /* Модальное окно */
+    .modal-content {
+        padding: 20px;
+        max-width: 90%;
+    }
+
+    #notificationMessage {
+        font-size: 16px;
+    }
+
+    .modal-ok-btn {
+        padding: 10px 25px;
+    }
+}
+
+/* Для очень маленьких экранов (меньше 480px) */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.5em;
+    }
+
+    .logo {
+        width: 40px;
+        height: 40px;
+    }
+
+    .welcome-text {
+        font-size: 14px;
+    }
+
+    .welcome-text h2 {
+        font-size: 1.2em;
+    }
+
+    .auth-fields {
+        max-width: 250px; /* Еще меньше для маленьких экранов */
+    }
+}
+@media (max-width: 768px) {
+    /* Шапка */
+    .header {
+        flex-direction: column;
+        padding: 15px 20px;
+        align-items: center;
+        text-align: center;
+    }
+
+    /* Авторизация */
+    .auth-fields {
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+        max-width: 300px; /* Ограничение ширины для аккуратности */
+        margin: 0 auto; /* Центрирование по горизонтали */
+        display: flex; /* Явно задаем flex для точного контроля */
+        justify-content: center; /* Убеждаемся в центрировании содержимого */
+        align-items: center; /* Вертикальное центрирование */
+    }
+
+    .auth-form {
+        width: 100%;
+        align-items: center;
+    }
+
+    .auth-form input,
+    .auth-form button,
+    .logout-btn {
+        width: 100%;
+        box-sizing: border-box;
+        max-width: 300px; /* Ограничение ширины полей */
+    }
+
+    .register-link {
+        text-align: center;
+        margin-top: 10px;
+    }
+}

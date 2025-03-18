@@ -20,6 +20,9 @@
     </header>
 
     <nav class="nav">
+        <button class="burger-btn" aria-label="Открыть меню">
+            <span class="burger-icon"></span>
+        </button>
         <ul class="nav-list">
             <li><a href="main1-1.html">Главная</a></li>
             <li><a href="book_trade_3.html">Начать обмен</a></li>
@@ -215,6 +218,104 @@
 
         // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', updateAuthDisplay);
+        document.addEventListener('DOMContentLoaded', () => {
+    const burgerBtn = document.querySelector('.burger-btn');
+    const navList = document.querySelector('.nav-list');
+
+    if (burgerBtn && navList) {
+        burgerBtn.addEventListener('click', () => {
+            burgerBtn.classList.toggle('active');
+            navList.classList.toggle('active');
+        });
+
+        navList.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                burgerBtn.classList.remove('active');
+                navList.classList.remove('active');
+            });
+        });
+    }
+
+    updateAuthDisplay();
+});
+
+// Функция для установки cookie
+function setCookie(name, value, days) {
+    let expires = '';
+    if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = `; expires=${date.toUTCString()}`;
+    }
+    document.cookie = `${name}=${value || ''}${expires}; path=/`;
+}
+
+// Функция входа
+function login() {
+    const loginInput = document.getElementById('loginInput').value;
+    const passwordInput = document.getElementById('passwordInput').value;
+
+    if (!loginInput || !passwordInput) {
+        showNotification('Пожалуйста, введите логин и пароль.');
+        return;
+    }
+
+    const params = new URLSearchParams({
+        userName: loginInput,
+        password: passwordInput
+    });
+
+    fetch(`https://serverbook-1-dhna.onrender.com/api/login?${params.toString()}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Неверный логин или пароль');
+            }
+            return response.json();
+        })
+        .then(data => {
+            setCookie('username', data.userName, 7);
+            updateAuthDisplay();
+            showNotification('Вы успешно вошли в систему!');
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            showNotification('Ошибка авторизации: ' + error.message);
+        });
+}
+
+// Функция выхода
+function logout() {
+    setCookie('username', '', -1);
+    updateAuthDisplay();
+}
+
+// Обновление интерфейса авторизации
+function updateAuthDisplay() {
+    const authContainer = document.getElementById('authContainer');
+    const username = getCookie('username');
+    if (username) {
+        authContainer.innerHTML = `
+            <div class="auth-fields">
+                <p>Добро пожаловать, ${username}!</p>
+                <button type="button" class="logout-btn" onclick="logout()">Выйти</button>
+            </div>
+        `;
+    } else {
+        authContainer.innerHTML = `
+            <form class="auth-form">
+                <div class="auth-fields">
+                    <input type="text" placeholder="Логин" name="login" id="loginInput">
+                    <input type="password" placeholder="Пароль" name="password" id="passwordInput">
+                    <button type="button" id="loginButton">Войти</button>
+                </div>
+                <div class="register-link">
+                    <a href="register.html">Нет аккаунта? Зарегистрируйтесь!</a>
+                </div>
+            </form>
+        `;
+        document.getElementById('loginButton').addEventListener('click', login);
+    }
+}
     </script>
     
 </body>

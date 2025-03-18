@@ -23,6 +23,9 @@
     </header>
 
     <nav class="nav">
+        <button class="burger-btn" aria-label="Открыть меню">
+            <span class="burger-icon"></span>
+        </button>
         <ul class="nav-list">
             <li><a href="main1-1.html">Главная</a></li>
             <li><a href="book_trade_3.html">Начать обмен</a></li>
@@ -352,6 +355,39 @@ async function loadCompletedExchanges() {
             document.cookie = 'userId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
             window.location.href = 'login.html';
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+    const burgerBtn = document.querySelector('.burger-btn');
+    const navList = document.querySelector('.nav-list');
+
+    if (burgerBtn && navList) {
+        burgerBtn.addEventListener('click', () => {
+            burgerBtn.classList.toggle('active');
+            navList.classList.toggle('active');
+        });
+
+        navList.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                burgerBtn.classList.remove('active');
+                navList.classList.remove('active');
+            });
+        });
+    }
+
+    // Существующий код инициализации
+    const username = getCookie('username');
+    const userId = getCookie('userId');
+    if (!username || !userId) {
+        console.error('Куки username или userId отсутствуют');
+        window.location.href = 'login.html';
+        return;
+    }
+    document.getElementById('username').textContent = username;
+    loadPersonalData();
+    loadBooksForReview();
+    showSection('proposals');
+});
+
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'91fc9da69eef7be2',t:'MTc0MTg4MDI4MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>

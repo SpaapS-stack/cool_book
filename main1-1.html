@@ -21,6 +21,9 @@
     </header>
 
     <nav class="nav">
+        <button class="burger-btn" aria-label="Открыть меню">
+            <span class="burger-icon"></span>
+        </button>
         <ul class="nav-list">
             <li><a href="main1-1.html">Главная</a></li>
             <li><a href="book_trade_3.html">Начать обмен</a></li>
@@ -155,6 +158,25 @@
             // Убрано перенаправление на login.html и вызовы loadPersonalData, loadBooksForReview, showSection
             // так как они не применимы к main1-1.html
         });
+        document.addEventListener('DOMContentLoaded', () => {
+    const burgerBtn = document.querySelector('.burger-btn');
+    const navList = document.querySelector('.nav-list');
+
+    burgerBtn.addEventListener('click', () => {
+        burgerBtn.classList.toggle('active');
+        navList.classList.toggle('active');
+    });
+
+    // Закрытие меню при клике на ссылку (опционально)
+    navList.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            burgerBtn.classList.remove('active');
+            navList.classList.remove('active');
+        });
+    });
+
+    updateAuthDisplay(); // Существующая инициализация
+});
     </script>
 
 </body>

@@ -804,3 +804,273 @@ footer {
 .modal.error .modal-ok-btn:hover {
     background: #c0392b;
 }
+/* Стили для бургер-меню */
+.burger-btn {
+    display: none; /* Скрыто на больших экранах */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1000; /* Высокий z-index для кнопки */
+    margin: 0 auto; /* Центрирование кнопки */
+}
+
+.burger-icon,
+.burger-icon::before,
+.burger-icon::after {
+    width: 30px;
+    height: 3px;
+    background: white;
+    display: block;
+    transition: all 0.3s ease;
+}
+
+.burger-icon {
+    position: relative;
+}
+
+.burger-icon::before,
+.burger-icon::after {
+    content: '';
+    position: absolute;
+    left: 0;
+}
+
+.burger-icon::before {
+    top: -8px;
+}
+
+.burger-icon::after {
+    bottom: -8px;
+}
+
+.burger-btn.active .burger-icon {
+    background: transparent; /* Средняя линия исчезает */
+}
+
+.burger-btn.active .burger-icon::before {
+    transform: rotate(45deg);
+    top: 0;
+}
+
+.burger-btn.active .burger-icon::after {
+    transform: rotate(-45deg);
+    bottom: 0;
+}
+
+/* Обновленные стили для .logout-btn */
+.logout-btn {
+    padding: 8px 20px;
+    background: #4CAF50;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    transition: background 0.3s ease;
+    width: 186px; /* Фиксированная ширина как на user.html */
+    text-align: center; /* Центрирование текста */
+}
+
+.logout-btn:hover {
+    background: #45a049;
+}
+
+/* Адаптивные стили для экранов ≤ 768px */
+@media (max-width: 768px) {
+    /* Шапка */
+    .header {
+        flex-direction: column;
+        padding: 15px 20px;
+        align-items: center; /* Центрирование элементов */
+        text-align: center;
+    }
+
+    .logo-container {
+        margin-bottom: 10px;
+        justify-content: center; /* Центрирование логотипа и заголовка */
+    }
+
+    .logo {
+        width: 50px;
+        height: 50px;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    /* Авторизация */
+    .auth-fields {
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+        max-width: 300px; /* Ограничение ширины как на других страницах */
+        margin: 0 auto; /* Центрирование блока */
+    }
+
+    .auth-form {
+        width: 100%;
+        align-items: center;
+    }
+
+    .auth-form input,
+    .auth-form button {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .logout-btn {
+        width: 186px; /* Фиксированная ширина кнопки "Выйти" */
+    }
+
+    .register-link {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    /* Навигация */
+    .nav {
+        padding: 10px 20px;
+        position: relative;
+        display: flex;
+        justify-content: center; /* Центрирование бургер-кнопки */
+        z-index: 1000; /* Высокий z-index для навигации */
+    }
+
+    .burger-btn {
+        display: block; /* Показываем бургер-меню */
+    }
+
+    .nav-list {
+        display: none; /* Скрываем меню по умолчанию */
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: #4CAF50;
+        padding: 10px 0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        z-index: 1001; /* Меню поверх контента */
+    }
+
+    .nav-list.active {
+        display: flex; /* Показываем при активации */
+    }
+
+    .nav-list li {
+        margin: 5px 0;
+        width: 100%;
+        text-align: center;
+        border: none;
+    }
+
+    .nav-list li::after {
+        display: none; /* Убираем подчеркивание */
+    }
+
+    /* Основной контент */
+    .main-content {
+        padding: 20px;
+        position: relative;
+        z-index: 1; /* Низкий z-index для контента */
+    }
+
+    .content-wrapper {
+        grid-template-columns: 1fr; /* Одна колонка */
+        padding: 1rem;
+        margin: 1rem;
+    }
+
+    .table-container {
+        margin: 10px 0;
+    }
+
+    .responsive-table {
+        display: block; /* Переключаем таблицу в блочный режим */
+        min-width: 0; /* Убираем минимальную ширину */
+    }
+
+    .responsive-table thead,
+    .responsive-table tbody,
+    .responsive-table tr,
+    .responsive-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .responsive-table tr {
+        margin-bottom: 15px;
+        padding: 10px;
+        background: linear-gradient(145deg, #ffffff, #f8f9fa); /* Сохраняем стиль карточек */
+        border-radius: 12px;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    }
+
+    .responsive-table td {
+        padding: 10px;
+        text-align: center;
+        border: none;
+    }
+
+    .responsive-table td::before {
+        display: none; /* Убираем псевдоэлементы для упрощения */
+    }
+
+    .profile-image {
+        width: 60px;
+        height: 60px;
+    }
+
+    .name {
+        font-size: 1em;
+    }
+
+    .role-position {
+        font-size: 1em;
+    }
+
+    .role-description {
+        font-size: 0.85em;
+        padding: 0;
+    }
+}
+
+/* Для экранов ≤ 480px */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.5em;
+    }
+
+    .logo {
+        width: 40px;
+        height: 40px;
+    }
+
+    .auth-fields {
+        max-width: 250px; /* Уменьшаем ширину блока */
+    }
+
+    .logout-btn {
+        width: 186px; /* Фиксированная ширина кнопки "Выйти" */
+    }
+
+    .profile-image {
+        width: 50px;
+        height: 50px;
+    }
+
+    .name {
+        font-size: 0.9em;
+    }
+
+    .role-position {
+        font-size: 0.9em;
+    }
+
+    .role-description {
+        font-size: 0.8em;
+    }
+}

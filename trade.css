@@ -529,3 +529,236 @@ footer {
 .modal.error .modal-ok-btn:hover {
     background: #c0392b;
 }
+/* Стили для бургер-меню */
+.burger-btn {
+    display: none; /* Скрыто на больших экранах */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1000; /* Высокий z-index для кнопки */
+    margin: 0 auto; /* Центрирование кнопки */
+}
+
+.burger-icon,
+.burger-icon::before,
+.burger-icon::after {
+    width: 30px;
+    height: 3px;
+    background: white;
+    display: block;
+    transition: all 0.3s ease;
+}
+
+.burger-icon {
+    position: relative;
+}
+
+.burger-icon::before,
+.burger-icon::after {
+    content: '';
+    position: absolute;
+    left: 0;
+}
+
+.burger-icon::before {
+    top: -8px;
+}
+
+.burger-icon::after {
+    bottom: -8px;
+}
+
+.burger-btn.active .burger-icon {
+    background: transparent;
+}
+
+.burger-btn.active .burger-icon::before {
+    transform: rotate(45deg);
+    top: 0;
+}
+
+.burger-btn.active .burger-icon::after {
+    transform: rotate(-45deg);
+    bottom: 0;
+}
+
+/* Адаптивные стили для экранов ≤ 768px */
+@media (max-width: 768px) {
+    /* Шапка */
+    .header {
+        flex-direction: column;
+        padding: 15px 20px;
+        align-items: center;
+        text-align: center;
+    }
+
+    .logo-container {
+        margin-bottom: 10px;
+        justify-content: center;
+    }
+
+    .logo {
+        width: 50px;
+        height: 50px;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    /* Авторизация */
+    .auth-fields {
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+
+    .auth-form {
+        width: 100%;
+        align-items: center;
+    }
+
+    .auth-form input,
+    .auth-form button,
+    .logout-btn {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .register-link {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    /* Навигация */
+    .nav {
+        padding: 10px 20px;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        z-index: 1000; /* Высокий z-index для всей навигации */
+    }
+
+    .burger-btn {
+        display: block;
+    }
+
+    .nav-list {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: #4CAF50;
+        padding: 10px 0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        z-index: 1001; /* z-index выше формы, но ниже модального окна */
+    }
+
+    .nav-list.active {
+        display: flex;
+    }
+
+    .nav-list li {
+        margin: 5px 0;
+        width: 100%;
+        text-align: center;
+        border: none;
+    }
+
+    .nav-list li::after {
+        display: none;
+    }
+
+    /* Основной контент */
+    .main-content {
+        padding: 20px;
+        position: relative;
+        z-index: 1; /* Низкий z-index для контента */
+    }
+
+    .exchange-form {
+        padding: 20px;
+        min-height: auto;
+        position: relative;
+        z-index: 2; /* Форма выше контента, но ниже меню */
+    }
+
+    .form-header {
+        font-size: 1.5em;
+    }
+
+    .form-sections {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .form-section {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .next-btn-container {
+        position: static;
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .prev-btn, .next-btn {
+        width: 100%;
+        max-width: 200px;
+    }
+
+    /* Модальное окно */
+    .modal-content {
+        padding: 20px;
+        max-width: 90%;
+    }
+
+    #notificationMessage {
+        font-size: 16px;
+    }
+
+    .modal-ok-btn {
+        padding: 10px 25px;
+    }
+
+    /* Уточнение z-index для подсказок */
+    .hint-tooltip {
+        z-index: 1002; /* Подсказки выше меню, но ниже модального окна */
+    }
+}
+
+/* Для экранов ≤ 480px */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.5em;
+    }
+
+    .logo {
+        width: 40px;
+        height: 40px;
+    }
+
+    .form-header {
+        font-size: 1.2em;
+    }
+
+    .form-section {
+        font-size: 12px;
+    }
+
+    .auth-fields {
+        max-width: 250px;
+    }
+}

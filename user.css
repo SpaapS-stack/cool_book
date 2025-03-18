@@ -432,6 +432,7 @@ a:active {
     transition: background 0.3s ease;
     text-decoration: none;
     display: inline-block;
+    text-align: center; /* Центрирование текста внутри кнопки */
 }
 .logout-btn:hover {
     background: #45a049;
@@ -466,4 +467,234 @@ a:active {
     border-radius: 12px;
     font-size: 0.85em;
     color: #4CAF50;
+}
+/* Стили для бургер-меню */
+.burger-btn {
+    display: none; /* Скрыто на больших экранах */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1000; /* Высокий z-index для кнопки */
+    margin: 0 auto; /* Центрирование кнопки */
+}
+
+.burger-icon,
+.burger-icon::before,
+.burger-icon::after {
+    width: 30px;
+    height: 3px;
+    background: white;
+    display: block;
+    transition: all 0.3s ease;
+}
+
+.burger-icon {
+    position: relative;
+}
+
+.burger-icon::before,
+.burger-icon::after {
+    content: '';
+    position: absolute;
+    left: 0;
+}
+
+.burger-icon::before {
+    top: -8px;
+}
+
+.burger-icon::after {
+    bottom: -8px;
+}
+
+.burger-btn.active .burger-icon {
+    background: transparent; /* Средняя линия исчезает */
+}
+
+.burger-btn.active .burger-icon::before {
+    transform: rotate(45deg);
+    top: 0;
+}
+
+.burger-btn.active .burger-icon::after {
+    transform: rotate(-45deg);
+    bottom: 0;
+}
+
+/* Адаптивные стили для экранов ≤ 768px */
+@media (max-width: 768px) {
+    /* Шапка */
+    .header {
+        flex-direction: column;
+        padding: 15px 20px;
+        align-items: center; /* Центрирование элементов */
+        text-align: center;
+    }
+
+    .logo-container {
+        margin-bottom: 10px;
+        justify-content: center; /* Центрирование логотипа и заголовка */
+    }
+
+    .logo {
+        width: 50px;
+        height: 50px;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    /* Авторизация */
+    .auth-fields {
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+        max-width: 300px; /* Ограничение ширины */
+        margin: 0 auto; /* Центрирование полей */
+    }
+
+    .auth-form {
+        width: 100%;
+        align-items: center;
+    }
+
+    .auth-form input,
+    .auth-form button,
+    .logout-btn {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .logout-btn {
+        width: 186px; /* Фиксированная ширина кнопки "Выйти" */
+    }
+    .register-link {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    /* Навигация */
+    .nav {
+        padding: 10px 20px;
+        position: relative;
+        display: flex;
+        justify-content: center; /* Центрирование бургер-кнопки */
+        z-index: 1000; /* Высокий z-index для навигации */
+    }
+
+    .burger-btn {
+        display: block; /* Показываем бургер-меню */
+    }
+
+    .nav-list {
+        display: none; /* Скрываем меню по умолчанию */
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: #4CAF50;
+        padding: 10px 0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        z-index: 1001; /* Меню поверх контента */
+    }
+
+    .nav-list.active {
+        display: flex; /* Показываем при активации */
+    }
+
+    .nav-list li {
+        margin: 5px 0;
+        width: 100%;
+        text-align: center;
+        border: none;
+    }
+
+    .nav-list li::after {
+        display: none; /* Убираем подчеркивание */
+    }
+
+    /* Основной контент */
+    .main-content {
+        padding: 20px;
+        position: relative;
+        z-index: 1; /* Низкий z-index для контента */
+    }
+
+    .content-wrapper {
+        grid-template-columns: 1fr; /* Одна колонка */
+    }
+
+    .exchange-sidebar {
+        position: static; /* Убираем липкость */
+        width: 100%;
+        padding: 15px;
+    }
+
+    .exchange-sidebar ul {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .exchange-sidebar li {
+        margin-bottom: 0;
+    }
+
+    .exchange-section {
+        padding: 15px;
+    }
+
+    .exchange-section h2 {
+        font-size: 1.5em;
+    }
+
+    .personal-data-form {
+        grid-template-columns: 1fr; /* Одна колонка для формы */
+    }
+
+    .book-list {
+        grid-template-columns: 1fr; /* Одна колонка для списка книг */
+    }
+
+    .review-form {
+        gap: 8px;
+    }
+
+    .review-form button {
+        align-self: center;
+        width: 100%;
+        max-width: 200px;
+    }
+
+    .save-btn {
+        width: 100%;
+        max-width: 200px;
+        margin: 0 auto;
+    }
+}
+
+/* Для экранов ≤ 480px */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.5em;
+    }
+
+    .logo {
+        width: 40px;
+        height: 40px;
+    }
+
+    .exchange-section h2 {
+        font-size: 1.2em;
+    }
+
+    .exchange-sidebar a {
+        font-size: 14px;
+    }
+
+    .auth-fields {
+        max-width: 250px; /* Уменьшаем ширину полей */
+    }
 }
